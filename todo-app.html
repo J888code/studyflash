@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        /* Lists Sidebar */
+        .lists-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .lists-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .lists-header h2 {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .add-list-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .add-list-btn:hover {
+            background: #5a6fd6;
+        }
+
+        .lists-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .list-chip {
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-chip:hover {
+            background: #e0e0e0;
+        }
+
+        .list-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .list-chip .delete-list {
+            display: none;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        .list-chip:hover .delete-list {
+            display: block;
+        }
+
+        .list-chip.active .delete-list {
+            display: block;
+            color: white;
+        }
+
+        /* Main Panel */
+        .main-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .current-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .current-list-name {
+            font-size: 1.3rem;
+            color: #333;
+        }
+
+        .sort-dropdown {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* Input Section */
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .voice-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-btn:hover {
+            background: #5a6fd6;
+            transform: scale(1.05);
+        }
+
+        .voice-btn.listening {
+            background: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .voice-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .add-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #219a52;
+        }
+
+        /* Voice Status */
+        .voice-status {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        .voice-status.active {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+
+        /* Todo Items */
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            touch-action: pan-y;
+        }
+
+        .todo-item-content {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            gap: 12px;
+            background: #f8f9fa;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .todo-item.swiping .todo-item-content {
+            transition: none;
+        }
+
+        .todo-item-text {
+            flex: 1;
+            font-size: 1rem;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .todo-item.completed .todo-item-text {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .todo-item-date {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .todo-item-priority {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background: #ffe0e0;
+            color: #e74c3c;
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #f39c12;
+        }
+
+        .priority-low {
+            background: #e0f7fa;
+            color: #00acc1;
+        }
+
+        /* Swipe Actions */
+        .swipe-action {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .swipe-action.left {
+            background: #27ae60;
+            justify-content: flex-start;
+        }
+
+        .swipe-action.right {
+            background: #e74c3c;
+            justify-content: flex-end;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .modal-btn.cancel {
+            background: #eee;
+            color: #666;
+        }
+
+        .modal-btn.confirm {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Priority Selector */
+        .priority-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .priority-option {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .priority-option:hover {
+            border-color: #ccc;
+        }
+
+        .priority-option.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+
+        /* Browser warning */
+        .browser-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .browser-warning.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voice To-Do List</h1>
+
+        <div class="browser-warning" id="browserWarning">
+            Voice recognition is not supported in this browser. Please use Chrome or Edge for voice features.
+        </div>
+
+        <!-- Lists Panel -->
+        <div class="lists-panel">
+            <div class="lists-header">
+                <h2>My Lists</h2>
+                <button class="add-list-btn" onclick="openAddListModal()">+ New List</button>
+            </div>
+            <div class="lists-container" id="listsContainer">
+                <!-- Lists will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <div class="current-list-header">
+                <h2 class="current-list-name" id="currentListName">Personal</h2>
+                <select class="sort-dropdown" id="sortDropdown" onchange="sortTodos()">
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="priority">By Priority</option>
+                    <option value="alpha">Alphabetical</option>
+                    <option value="completed">Completed Last</option>
+                </select>
+            </div>
+
+            <div class="input-section">
+                <input type="text" class="text-input" id="todoInput" placeholder="Add a new task..." onkeypress="handleKeyPress(event)">
+                <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </button>
+                <button class="add-btn" onclick="addTodoFromInput()">+</button>
+            </div>
+
+            <div class="voice-status" id="voiceStatus"></div>
+
+            <ul class="todo-list" id="todoList">
+                <!-- Todos will be rendered here -->
+            </ul>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                    <path d="M18 9l-1.4-1.4-6.6 6.6-2.6-2.6L6 13l4 4z"/>
+                </svg>
+                <p>No tasks yet!</p>
+                <p>Add a task using voice or text input above.</p>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ul>
+                <li><strong>Voice:</strong> Click the microphone and speak your task</li>
+                <li><strong>Type:</strong> Enter text and click + or press Enter</li>
+                <li><strong>Swipe Left:</strong> Mark task as complete</li>
+                <li><strong>Swipe Right:</strong> Delete task</li>
+                <li><strong>Organize:</strong> Create multiple lists and sort tasks</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Add List Modal -->
+    <div class="modal-overlay" id="addListModal">
+        <div class="modal">
+            <h3>Create New List</h3>
+            <input type="text" id="newListName" placeholder="List name..." onkeypress="handleListKeyPress(event)">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeAddListModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="createList()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Todo Modal (for priority) -->
+    <div class="modal-overlay" id="addTodoModal">
+        <div class="modal">
+            <h3>Add Task</h3>
+            <input type="text" id="modalTodoText" placeholder="Task description...">
+            <p style="margin-bottom: 8px; color: #666; font-size: 0.85rem;">Priority:</p>
+            <div class="priority-selector">
+                <div class="priority-option" data-priority="low" onclick="selectPriority('low')">Low</div>
+                <div class="priority-option selected" data-priority="medium" onclick="selectPriority('medium')">Medium</div>
+                <div class="priority-option" data-priority="high" onclick="selectPriority('high')">High</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeAddTodoModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="confirmAddTodo()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let lists = [];
+        let currentListId = null;
+        let selectedPriority = 'medium';
+        let recognition = null;
+        let isListening = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            initVoiceRecognition();
+            renderLists();
+            renderTodos();
+        });
+
+        // Storage
+        function loadFromStorage() {
+            const savedLists = localStorage.getItem('todoLists');
+            if (savedLists) {
+                lists = JSON.parse(savedLists);
+            } else {
+                lists = [
+                    { id: 'default', name: 'Personal', todos: [] },
+                    { id: 'work', name: 'Work', todos: [] }
+                ];
+            }
+            currentListId = lists.length > 0 ? lists[0].id : null;
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('todoLists', JSON.stringify(lists));
+        }
+
+        // Voice Recognition
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    isListening = true;
+                    document.getElementById('voiceBtn').classList.add('listening');
+                    document.getElementById('voiceStatus').textContent = 'Listening...';
+                    document.getElementById('voiceStatus').classList.add('active');
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('todoInput').value = transcript;
+                    document.getElementById('voiceStatus').textContent = `Heard: "${transcript}"`;
+
+                    if (event.results[0].isFinal) {
+                        setTimeout(() => {
+                            addTodo(transcript);
+                            document.getElementById('todoInput').value = '';
+                            document.getElementById('voiceStatus').textContent = 'Task added!';
+                            setTimeout(() => {
+                                document.getElementById('voiceStatus').textContent = '';
+                                document.getElementById('voiceStatus').classList.remove('active');
+                            }, 1500);
+                        }, 500);
+                    }
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    document.getElementById('voiceStatus').textContent = `Error: ${event.error}`;
+                    document.getElementById('voiceStatus').classList.remove('active');
+                    stopListening();
+                };
+
+                recognition.onend = () => {
+                    stopListening();
+                };
+            } else {
+                document.getElementById('browserWarning').classList.add('show');
+                document.getElementById('voiceBtn').style.display = 'none';
+            }
+        }
+
+        function toggleVoice() {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error('Error starting recognition:', e);
+                }
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            document.getElementById('voiceBtn').classList.remove('listening');
+        }
+
+        // List Management
+        function renderLists() {
+            const container = document.getElementById('listsContainer');
+            container.innerHTML = lists.map(list => `
+                <div class="list-chip ${list.id === currentListId ? 'active' : ''}" onclick="selectList('${list.id}')">
+                    ${list.name}
+                    <button class="delete-list" onclick="event.stopPropagation(); deleteList('${list.id}')">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        function selectList(listId) {
+            currentListId = listId;
+            const list = lists.find(l => l.id === listId);
+            document.getElementById('currentListName').textContent = list ? list.name : 'Tasks';
+            renderLists();
+            renderTodos();
+        }
+
+        function openAddListModal() {
+            document.getElementById('addListModal').classList.add('show');
+            document.getElementById('newListName').value = '';
+            document.getElementById('newListName').focus();
+        }
+
+        function closeAddListModal() {
+            document.getElementById('addListModal').classList.remove('show');
+        }
+
+        function handleListKeyPress(event) {
+            if (event.key === 'Enter') {
+                createList();
+            }
+        }
+
+        function createList() {
+            const name = document.getElementById('newListName').value.trim();
+            if (name) {
+                const newList = {
+                    id: 'list-' + Date.now(),
+                    name: name,
+                    todos: []
+                };
+                lists.push(newList);
+                saveToStorage();
+                selectList(newList.id);
+                closeAddListModal();
+            }
+        }
+
+        function deleteList(listId) {
+            if (lists.length <= 1) {
+                alert('You must have at least one list!');
+                return;
+            }
+            if (confirm('Delete this list and all its tasks?')) {
+                lists = lists.filter(l => l.id !== listId);
+                if (currentListId === listId) {
+                    currentListId = lists[0].id;
+                }
+                saveToStorage();
+                renderLists();
+                renderTodos();
+            }
+        }
+
+        // Todo Management
+        function getCurrentList() {
+            return lists.find(l => l.id === currentListId);
+        }
+
+        function addTodo(text, priority = 'medium') {
+            const list = getCurrentList();
+            if (!list || !text.trim()) return;
+
+            const todo = {
+                id: 'todo-' + Date.now(),
+                text: text.trim(),
+                completed: false,
+                priority: priority,
+                createdAt: new Date().toISOString()
+            };
+
+            list.todos.push(todo);
+            saveToStorage();
+            renderTodos();
+        }
+
+        function addTodoFromInput() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (text) {
+                document.getElementById('modalTodoText').value = text;
+                document.getElementById('addTodoModal').classList.add('show');
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addTodoFromInput();
+            }
+        }
+
+        function selectPriority(priority) {
+            selectedPriority = priority;
+            document.querySelectorAll('.priority-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.querySelector(`.priority-option[data-priority="${priority}"]`).classList.add('selected');
+        }
+
+        function closeAddTodoModal() {
+            document.getElementById('addTodoModal').classList.remove('show');
+            document.getElementById('todoInput').value = '';
+        }
+
+        function confirmAddTodo() {
+            const text = document.getElementById('modalTodoText').value;
+            addTodo(text, selectedPriority);
+            closeAddTodoModal();
+            selectedPriority = 'medium';
+            document.querySelectorAll('.priority-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.querySelector('.priority-option[data-priority="medium"]').classList.add('selected');
+        }
+
+        function toggleTodo(todoId) {
+            const list = getCurrentList();
+            const todo = list.todos.find(t => t.id === todoId);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveToStorage();
+                renderTodos();
+            }
+        }
+
+        function deleteTodo(todoId) {
+            const list = getCurrentList();
+            list.todos = list.todos.filter(t => t.id !== todoId);
+            saveToStorage();
+            renderTodos();
+        }
+
+        function sortTodos() {
+            const sortBy = document.getElementById('sortDropdown').value;
+            renderTodos(sortBy);
+        }
+
+        function renderTodos(sortBy = 'date-desc') {
+            const list = getCurrentList();
+            const container = document.getElementById('todoList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!list || list.todos.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            // Sort todos
+            let sortedTodos = [...list.todos];
+            switch (sortBy) {
+                case 'date-asc':
+                    sortedTodos.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                    break;
+                case 'date-desc':
+                    sortedTodos.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    break;
+                case 'priority':
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    sortedTodos.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+                    break;
+                case 'alpha':
+                    sortedTodos.sort((a, b) => a.text.localeCompare(b.text));
+                    break;
+                case 'completed':
+                    sortedTodos.sort((a, b) => a.completed - b.completed);
+                    break;
+            }
+
+            container.innerHTML = sortedTodos.map(todo => {
+                const date = new Date(todo.createdAt);
+                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `
+                    <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+                        <div class="swipe-action left">Complete</div>
+                        <div class="swipe-action right">Delete</div>
+                        <div class="todo-item-content">
+                            <span class="todo-item-text">${escapeHtml(todo.text)}</span>
+                            <span class="todo-item-priority priority-${todo.priority}">${todo.priority}</span>
+                            <span class="todo-item-date">${dateStr}</span>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+
+            // Add swipe handlers
+            document.querySelectorAll('.todo-item').forEach(item => {
+                addSwipeHandlers(item);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Swipe Handling
+        function addSwipeHandlers(element) {
+            let startX = 0;
+            let currentX = 0;
+            let isSwiping = false;
+
+            const content = element.querySelector('.todo-item-content');
+            const threshold = 100;
+
+            const onStart = (clientX) => {
+                startX = clientX;
+                isSwiping = true;
+                element.classList.add('swiping');
+            };
+
+            const onMove = (clientX) => {
+                if (!isSwiping) return;
+                currentX = clientX - startX;
+                content.style.transform = `translateX(${currentX}px)`;
+            };
+
+            const onEnd = () => {
+                if (!isSwiping) return;
+                isSwiping = false;
+                element.classList.remove('swiping');
+
+                const todoId = element.dataset.id;
+
+                if (currentX < -threshold) {
+                    // Swiped left - complete
+                    content.style.transform = `translateX(-100%)`;
+                    setTimeout(() => {
+                        toggleTodo(todoId);
+                    }, 200);
+                } else if (currentX > threshold) {
+                    // Swiped right - delete
+                    content.style.transform = `translateX(100%)`;
+                    setTimeout(() => {
+                        deleteTodo(todoId);
+                    }, 200);
+                } else {
+                    // Reset
+                    content.style.transform = '';
+                }
+
+                currentX = 0;
+            };
+
+            // Touch events
+            element.addEventListener('touchstart', (e) => {
+                onStart(e.touches[0].clientX);
+            }, { passive: true });
+
+            element.addEventListener('touchmove', (e) => {
+                onMove(e.touches[0].clientX);
+            }, { passive: true });
+
+            element.addEventListener('touchend', onEnd);
+
+            // Mouse events (for desktop testing)
+            element.addEventListener('mousedown', (e) => {
+                onStart(e.clientX);
+
+                const mouseMoveHandler = (e) => onMove(e.clientX);
+                const mouseUpHandler = () => {
+                    onEnd();
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                };
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            });
+        }
+    </script>
+</body>
+</html>

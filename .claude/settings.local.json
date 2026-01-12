@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"\" \"C:\\\\Users\\\\jasmi\\\\OneDrive\\\\Documents\\\\ClaudeCode\\\\MyProject\\\\index.html\")"
+    ]
+  }
+}

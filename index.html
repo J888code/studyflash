@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlash - GCSE Revision</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Auth View (Login/Signup) -->
+    <div id="auth-view" class="auth-view">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>StudyFlash</h1>
+                <p>Your GCSE Revision Companion</p>
+            </div>
+
+            <!-- Login Section -->
+            <div id="login-section" class="auth-section">
+                <h2>Welcome Back!</h2>
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="Enter your password">
+                    </div>
+                    <div id="login-error" class="auth-error" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary btn-large btn-full">Sign In</button>
+                </form>
+                <button id="forgot-password-btn" class="btn-link">Forgot password?</button>
+                <div class="auth-divider"><span>or</span></div>
+                <button class="btn btn-google google-signin-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Continue with Google
+                </button>
+                <p class="auth-switch">Don't have an account? <button id="show-signup" class="btn-link">Sign up</button></p>
+            </div>
+
+            <!-- Signup Section -->
+            <div id="signup-section" class="auth-section" style="display: none;">
+                <h2>Create Account</h2>
+                <form id="signup-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="signup-name">Name</label>
+                        <input type="text" id="signup-name" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="At least 6 characters">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" required placeholder="Confirm your password">
+                    </div>
+                    <div id="signup-error" class="auth-error" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary btn-large btn-full">Create Account</button>
+                </form>
+                <div class="auth-divider"><span>or</span></div>
+                <button class="btn btn-google google-signin-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Continue with Google
+                </button>
+                <p class="auth-switch">Already have an account? <button id="show-login" class="btn-link">Sign in</button></p>
+            </div>
+
+            <p class="auth-legal">By continuing, you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></p>
+        </div>
+    </div>
+
+    <div class="app" style="display: none;">
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="nav-brand">StudyFlash</div>
+            <div class="nav-links">
+                <button class="nav-link active" data-view="dashboard">Dashboard</button>
+                <button class="nav-link" data-view="decks">Decks</button>
+                <button class="nav-link" data-view="scanner">Scanner</button>
+                <button class="nav-link" data-view="study">Study</button>
+                <button class="nav-link" data-view="quiz">Quiz</button>
+                <button class="nav-link" data-view="profile">Profile</button>
+            </div>
+            <!-- XP Bar -->
+            <div class="xp-bar-container" id="xp-bar-container">
+                <div class="level-badge">
+                    <span class="level-icon" id="level-icon">🌱</span>
+                    <span id="level-num">Lv. 1</span>
+                </div>
+                <div class="xp-bar">
+                    <div class="xp-fill" id="xp-fill" style="width: 0%"></div>
+                </div>
+                <span class="xp-text" id="xp-text">0 XP</span>
+            </div>
+            <!-- Coins Display -->
+            <div class="coins-display" id="coins-display">
+                <span class="coin-icon">🪙</span>
+                <span id="coin-count">500</span>
+            </div>
+            <!-- Premium Badge / Upgrade Button -->
+            <div id="premium-status">
+                <button class="btn-upgrade" id="upgrade-btn">⭐ Go Pro</button>
+            </div>
+        </nav>
+
+        <!-- Combo Display -->
+        <div class="combo-display" id="combo-display" style="display: none;">
+            <div class="combo-number" id="combo-number">0</div>
+            <div class="combo-label">COMBO!</div>
+        </div>
+
+        <!-- Daily Reward Popup -->
+        <div id="daily-reward-popup" class="popup-overlay" style="display: none;">
+            <div class="popup-content daily-reward-content">
+                <h2>Daily Reward!</h2>
+                <div class="reward-days" id="reward-days"></div>
+                <button class="btn btn-primary btn-large" id="claim-reward-btn">Claim Reward!</button>
+                <button class="btn btn-secondary" id="close-reward-btn">Later</button>
+            </div>
+        </div>
+
+        <!-- Pomodoro Timer -->
+        <div id="pomodoro-popup" class="popup-overlay" style="display: none;">
+            <div class="popup-content pomodoro-content">
+                <h2 id="pomodoro-title">Study Timer</h2>
+                <div class="pomodoro-timer" id="pomodoro-timer">25:00</div>
+                <div class="pomodoro-status" id="pomodoro-status">Focus Time</div>
+                <div class="pomodoro-sessions">
+                    <span id="pomodoro-sessions">0</span> sessions completed today
+                </div>
+                <div class="pomodoro-controls">
+                    <button class="btn btn-primary" id="pomodoro-start">Start</button>
+                    <button class="btn btn-secondary" id="pomodoro-pause" style="display: none;">Pause</button>
+                    <button class="btn btn-secondary" id="pomodoro-stop">Stop</button>
+                </div>
+                <button class="popup-close" id="pomodoro-close">&times;</button>
+            </div>
+        </div>
+
+        <!-- Pricing Modal -->
+        <div id="pricing-popup" class="popup-overlay" style="display: none;">
+            <div class="popup-content pricing-content">
+                <button class="popup-close" id="pricing-close">&times;</button>
+                <h2>Upgrade to Pro</h2>
+                <p class="pricing-subtitle">Unlock your full potential</p>
+
+                <div class="pricing-plans" id="pricing-plans">
+                    <!-- Plans rendered by JS -->
+                </div>
+
+                <div class="pricing-section">
+                    <h3>🪙 Need More Coins?</h3>
+                    <div class="coin-packs" id="coin-packs">
+                        <!-- Coin packs rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <h3>📚 Content Packs</h3>
+                    <div class="content-packs" id="content-packs">
+                        <!-- Content packs rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="pricing-footer">
+                    <p>🔒 Secure payment powered by Stripe</p>
+                    <p class="pricing-note">Cancel anytime. 7-day money-back guarantee.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Watch Ad for Coins Button (shown for free users) -->
+        <div id="watch-ad-btn" class="watch-ad-floating" style="display: none;">
+            <button onclick="Ads.showAd('rewarded')">🎬 Watch Ad +50 🪙</button>
+        </div>
+
+        <!-- Dashboard View -->
+        <main id="dashboard" class="view active">
+            <!-- Daily Challenge -->
+            <div class="daily-challenge" id="daily-challenge">
+                <div class="challenge-header">
+                    <div class="challenge-title">
+                        <span>🎯</span>
+                        <span>Daily Challenge</span>
+                    </div>
+                    <span class="challenge-reward">+150 XP</span>
+                </div>
+                <p class="challenge-desc" id="challenge-desc">Review 20 cards today</p>
+                <div class="challenge-progress">
+                    <div class="challenge-progress-fill" id="challenge-progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-header">
+                <h1>Welcome back!</h1>
+                <p class="subtitle">Keep up your revision streak</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="cards-due">0</span>
+                    <span class="stat-label">Cards Due Today</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number streak-fire" id="streak-count">0</span>
+                    <span class="stat-label">Day Streak</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="total-cards">0</span>
+                    <span class="stat-label">Total Cards</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="mastered-cards">0</span>
+                    <span class="stat-label">Mastered</span>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-primary" id="start-review">🚀 Start Daily Review</button>
+                <button class="btn btn-secondary" id="quick-quiz">⚡ Quick Quiz</button>
+                <button class="btn btn-accent" id="start-pomodoro">🍅 Pomodoro Timer</button>
+            </div>
+
+            <!-- Study Calendar -->
+            <div class="calendar-section">
+                <h2>Study Activity</h2>
+                <div class="heatmap-container" id="heatmap-container"></div>
+                <div class="heatmap-legend">
+                    <span>Less</span>
+                    <div class="legend-box level-0"></div>
+                    <div class="legend-box level-1"></div>
+                    <div class="legend-box level-2"></div>
+                    <div class="legend-box level-3"></div>
+                    <div class="legend-box level-4"></div>
+                    <span>More</span>
+                </div>
+            </div>
+
+            <!-- Leaderboard Preview -->
+            <div class="leaderboard-preview">
+                <div class="leaderboard-header">
+                    <h2>Leaderboard</h2>
+                    <span class="leaderboard-rank" id="user-rank">Rank #1</span>
+                </div>
+                <div class="leaderboard-list" id="leaderboard-preview"></div>
+            </div>
+
+            <div class="recent-activity">
+                <h2>Recent Decks</h2>
+                <div id="recent-decks" class="deck-list"></div>
+            </div>
+        </main>
+
+        <!-- Decks View -->
+        <main id="decks" class="view">
+            <div class="view-header">
+                <h1>Your Decks</h1>
+                <button class="btn btn-primary" id="create-deck-btn">+ New Deck</button>
+            </div>
+            <div class="deck-tabs">
+                <button class="tab active" data-tab="my-decks">My Decks</button>
+                <button class="tab" data-tab="gcse-decks">GCSE Decks</button>
+            </div>
+            <div id="my-decks" class="tab-content active">
+                <div id="user-decks" class="deck-grid"></div>
+            </div>
+            <div id="gcse-decks" class="tab-content">
+                <div id="premade-decks" class="deck-grid"></div>
+            </div>
+        </main>
+
+        <!-- Deck Detail View -->
+        <main id="deck-detail" class="view">
+            <div class="view-header">
+                <button class="btn-back" id="back-to-decks">&larr; Back</button>
+                <h1 id="deck-title">Deck Name</h1>
+                <div class="deck-actions">
+                    <button class="btn btn-primary" id="study-deck">📚 Study</button>
+                    <button class="btn btn-secondary" id="quiz-deck">🎮 Quiz</button>
+                </div>
+            </div>
+            <div class="card-list-header">
+                <span id="card-count">0 cards</span>
+                <button class="btn btn-small" id="add-card-btn">+ Add Card</button>
+            </div>
+            <div id="cards-list" class="cards-list"></div>
+        </main>
+
+        <!-- Scanner View -->
+        <main id="scanner" class="view">
+            <div class="scanner-container">
+                <div class="scanner-header">
+                    <h1>📷 Notes Scanner</h1>
+                    <p class="scanner-subtitle">Turn your handwritten notes into flashcards instantly</p>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="scanner-upload-section">
+                    <div class="upload-options">
+                        <div class="upload-option" id="camera-option">
+                            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('camera-input').click()">
+                                <span class="upload-icon">📸</span>
+                                <span>Take Photo</span>
+                            </button>
+                        </div>
+                        <div class="upload-option" id="file-option">
+                            <input type="file" id="file-input" accept="image/*" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+                                <span class="upload-icon">📁</span>
+                                <span>Upload Image</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="upload-tips">
+                        <h4>Tips for best results:</h4>
+                        <ul>
+                            <li>Use good lighting</li>
+                            <li>Keep text horizontal</li>
+                            <li>Avoid shadows on the page</li>
+                            <li>Make sure writing is clear</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="scanner-preview-section" id="scanner-preview" style="display: none;">
+                    <div class="preview-header">
+                        <h3>Image Preview</h3>
+                        <button class="btn btn-small btn-secondary" id="clear-image">Clear</button>
+                    </div>
+                    <div class="preview-image-container">
+                        <img id="preview-image" src="" alt="Preview">
+                    </div>
+                    <div class="scan-actions">
+                        <button class="btn btn-primary btn-large" id="scan-btn">
+                            <span>🔍 Scan & Extract Text</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Processing Section -->
+                <div class="scanner-processing" id="scanner-processing" style="display: none;">
+                    <div class="processing-animation">
+                        <div class="scan-line"></div>
+                    </div>
+                    <p class="processing-status" id="processing-status">Analyzing image...</p>
+                    <div class="processing-progress">
+                        <div class="processing-progress-fill" id="scan-progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Extracted Text Section -->
+                <div class="scanner-text-section" id="scanner-text" style="display: none;">
+                    <div class="text-header">
+                        <h3>📝 Extracted Text</h3>
+                        <button class="btn btn-small" id="edit-text-btn">Edit</button>
+                    </div>
+                    <div class="extracted-text-container">
+                        <textarea id="extracted-text" readonly></textarea>
+                    </div>
+                    <div class="generate-actions">
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select id="scanner-subject">
+                                <option value="maths">Maths</option>
+                                <option value="science">Science</option>
+                                <option value="english">English</option>
+                                <option value="history">History</option>
+                                <option value="geography">Geography</option>
+                                <option value="languages">Languages</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Deck Name</label>
+                            <input type="text" id="scanner-deck-name" placeholder="e.g., Biology Chapter 3">
+                        </div>
+                        <button class="btn btn-primary btn-large" id="generate-cards-btn">
+                            <span>✨ Generate Flashcards</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generated Cards Section -->
+                <div class="scanner-cards-section" id="scanner-cards" style="display: none;">
+                    <div class="cards-header">
+                        <h3>🎴 Generated Flashcards</h3>
+                        <span class="cards-count" id="generated-count">0 cards</span>
+                    </div>
+                    <div class="generated-cards-list" id="generated-cards-list">
+                        <!-- Cards will be rendered here -->
+                    </div>
+                    <div class="cards-actions">
+                        <button class="btn btn-secondary" id="add-more-cards">+ Add More</button>
+                        <button class="btn btn-primary btn-large" id="save-generated-deck">
+                            <span>💾 Save Deck</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Success Section -->
+                <div class="scanner-success" id="scanner-success" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h2>Deck Created!</h2>
+                    <p id="success-message">Your flashcards are ready to study</p>
+                    <div class="success-actions">
+                        <button class="btn btn-primary" id="study-new-deck">📚 Study Now</button>
+                        <button class="btn btn-secondary" id="scan-another">📷 Scan Another</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Study View -->
+        <main id="study" class="view">
+            <div class="study-container">
+                <div class="study-header">
+                    <button class="btn-back" id="exit-study">&larr; Exit</button>
+                    <span id="study-progress">0 / 0</span>
+                    <span id="study-deck-name">Deck Name</span>
+                </div>
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <p id="card-front-text">Question</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <p id="card-back-text">Answer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="flip-hint">Click card to flip</p>
+                </div>
+                <div class="rating-buttons" id="rating-buttons" style="display: none;">
+                    <p>How well did you know this?</p>
+                    <div class="rating-options">
+                        <button class="rating-btn hard" data-rating="1">😰 Hard</button>
+                        <button class="rating-btn medium" data-rating="3">🤔 Medium</button>
+                        <button class="rating-btn easy" data-rating="5">😎 Easy</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Quiz View -->
+        <main id="quiz" class="view">
+            <div id="quiz-setup" class="quiz-setup">
+                <h1>🎮 Quiz Mode</h1>
+                <div class="quiz-options">
+                    <div class="form-group">
+                        <label>Select Deck</label>
+                        <select id="quiz-deck-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quiz Type</label>
+                        <div class="quiz-type-options">
+                            <button class="quiz-type active" data-type="multiple">Multiple Choice</button>
+                            <button class="quiz-type" data-type="type">Type Answer</button>
+                            <button class="quiz-type" data-type="match">Match Pairs</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Questions</label>
+                        <select id="quiz-count">
+                            <option value="5">5 questions</option>
+                            <option value="10" selected>10 questions</option>
+                            <option value="20">20 questions</option>
+                            <option value="all">All cards</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="quiz-timer"> ⏱️ Timed (30s per question)
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-large" id="start-quiz">🚀 Start Quiz</button>
+                </div>
+            </div>
+            <div id="quiz-game" class="quiz-game" style="display: none;">
+                <div class="quiz-header">
+                    <span id="quiz-question-num">Question 1 of 10</span>
+                    <span id="quiz-score">Score: 0</span>
+                    <span id="quiz-timer-display" style="display: none;">30s</span>
+                </div>
+                <div class="quiz-question">
+                    <h2 id="quiz-question-text">Question text here</h2>
+                </div>
+                <div id="quiz-answers" class="quiz-answers"></div>
+                <div id="quiz-type-answer" class="quiz-type-answer" style="display: none;">
+                    <input type="text" id="type-answer-input" placeholder="Type your answer...">
+                    <button class="btn btn-primary" id="submit-answer">Submit</button>
+                </div>
+                <button class="btn btn-primary" id="next-question" style="display: none;">Next Question ➡️</button>
+            </div>
+            <div id="quiz-results" class="quiz-results" style="display: none;">
+                <div class="quiz-celebration">
+                    <div class="celebration-stars" id="celebration-stars">⭐⭐⭐</div>
+                    <h1>Quiz Complete!</h1>
+                    <div class="celebration-score">
+                        <span id="final-score">8</span> / <span id="total-questions">10</span>
+                    </div>
+                    <p id="results-message">Great job!</p>
+                </div>
+                <div class="results-breakdown" id="results-breakdown"></div>
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="retry-quiz">🔄 Try Again</button>
+                    <button class="btn btn-secondary" id="back-to-quiz-setup">Choose Another Quiz</button>
+                </div>
+            </div>
+
+            <!-- Match Pairs Game -->
+            <div id="match-pairs-game" class="match-pairs-game" style="display: none;">
+                <div class="match-header">
+                    <button class="btn-back" id="exit-match">&larr; Exit</button>
+                    <span id="match-moves">Moves: 0</span>
+                    <span id="match-pairs-count">0 / 6</span>
+                </div>
+                <div class="match-grid" id="match-grid"></div>
+            </div>
+
+            <!-- Match Pairs Results -->
+            <div id="match-results" class="match-results" style="display: none;">
+                <div class="match-celebration">
+                    <div class="celebration-stars" id="match-stars">⭐⭐⭐</div>
+                    <h1>All Pairs Matched!</h1>
+                    <div class="match-stats">
+                        <div class="match-stat">
+                            <span class="match-stat-num" id="match-final-moves">12</span>
+                            <span class="match-stat-label">Moves</span>
+                        </div>
+                        <div class="match-stat">
+                            <span class="match-stat-num" id="match-time">45s</span>
+                            <span class="match-stat-label">Time</span>
+                        </div>
+                        <div class="match-stat">
+                            <span class="match-stat-num" id="match-xp">+50</span>
+                            <span class="match-stat-label">XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="retry-match">🔄 Play Again</button>
+                    <button class="btn btn-secondary" id="back-from-match">Choose Another Quiz</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Profile View (New!) -->
+        <main id="profile" class="view">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profile-avatar">🌱</div>
+                <div class="profile-info">
+                    <div class="profile-level" id="profile-level">Level 1</div>
+                    <div class="profile-title" id="profile-title">Beginner</div>
+                    <div class="profile-xp-bar">
+                        <div class="profile-xp-fill" id="profile-xp-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="xp-text" id="profile-xp-text">0 / 100 XP</div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="settings-section">
+                <h3>📊 Your Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="profile-total-xp">0</span>
+                        <span class="stat-label">Total XP</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="profile-reviews">0</span>
+                        <span class="stat-label">Cards Reviewed</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="profile-quizzes">0</span>
+                        <span class="stat-label">Quizzes Taken</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="profile-best-combo">0</span>
+                        <span class="stat-label">Best Combo</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Section -->
+            <div class="settings-section">
+                <h3>🏆 Achievements</h3>
+                <div class="achievements-grid" id="achievements-grid">
+                    <!-- Achievements will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Power-ups Shop -->
+            <div class="settings-section">
+                <h3>⚡ Power-ups Shop</h3>
+                <p class="setting-desc">Spend your coins on helpful boosts</p>
+                <div class="shop-grid" id="shop-grid">
+                    <!-- Power-ups will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Card Themes Section -->
+            <div class="settings-section">
+                <h3>🎨 Card Themes</h3>
+                <p class="setting-desc">Customize how your flashcards look</p>
+                <div class="theme-grid" id="theme-grid">
+                    <!-- Themes will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="settings-section">
+                <h3>⚙️ Settings</h3>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Sound Effects</div>
+                        <div class="setting-desc">Play sounds for actions and achievements</div>
+                    </div>
+                    <div class="toggle active" id="sound-toggle"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div id="modal-overlay" class="modal-overlay">
+            <!-- Create Deck Modal -->
+            <div id="create-deck-modal" class="modal">
+                <div class="modal-header">
+                    <h2>Create New Deck</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Deck Name</label>
+                        <input type="text" id="deck-name-input" placeholder="e.g., Biology Key Terms">
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select id="deck-subject-select">
+                            <option value="maths">Maths</option>
+                            <option value="science">Science</option>
+                            <option value="english">English</option>
+                            <option value="history">History</option>
+                            <option value="geography">Geography</option>
+                            <option value="languages">Languages</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary modal-cancel">Cancel</button>
+                    <button class="btn btn-primary" id="save-deck">Create Deck</button>
+                </div>
+            </div>
+
+            <!-- Add Card Modal -->
+            <div id="add-card-modal" class="modal">
+                <div class="modal-header">
+                    <h2 id="card-modal-title">Add New Card</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Front (Question)</label>
+                        <textarea id="card-front-input" placeholder="Enter the question or term"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Back (Answer)</label>
+                        <textarea id="card-back-input" placeholder="Enter the answer or definition"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary modal-cancel">Cancel</button>
+                    <button class="btn btn-primary" id="save-card">Save Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Stripe SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/flashcard.js"></script>
+    <script src="js/spaced-rep.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/gamification.js"></script>
+    <script src="js/scanner.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/payments.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
