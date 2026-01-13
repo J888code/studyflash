@@ -135,23 +135,25 @@ const Auth = {
     // Update UI based on auth state
     updateAuthUI(isSignedIn, user) {
         const authView = document.getElementById('auth-view');
-        const mainContent = document.querySelector('.main-content');
+        const mainApp = document.querySelector('.app');
         const userNameEl = document.getElementById('user-display-name');
         const userAvatarEl = document.getElementById('user-avatar');
 
         if (isSignedIn && user) {
             if (authView) authView.style.display = 'none';
-            if (mainContent) mainContent.style.display = 'block';
+            if (mainApp) mainApp.style.display = 'block';
             if (userNameEl) userNameEl.textContent = user.displayName || 'Student';
             if (userAvatarEl && user.photoURL) {
                 userAvatarEl.src = user.photoURL;
             }
 
             // Show dashboard
-            App.showView('dashboard');
+            if (typeof App !== 'undefined' && App.showView) {
+                App.showView('dashboard');
+            }
         } else {
             if (authView) authView.style.display = 'flex';
-            if (mainContent) mainContent.style.display = 'none';
+            if (mainApp) mainApp.style.display = 'none';
         }
     },
 
