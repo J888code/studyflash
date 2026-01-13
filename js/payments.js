@@ -31,7 +31,7 @@ const Payments = {
 
         try {
             // In production, this calls your backend API
-            const response = await fetch('/api/create-checkout-session', {
+            const response = await fetch('https://studyflash-server.onrender.com/api/create-checkout-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const Payments = {
         }
 
         try {
-            const response = await fetch('/api/create-checkout-session', {
+            const response = await fetch('https://studyflash-server.onrender.com/api/create-checkout-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
