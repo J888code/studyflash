@@ -949,78 +949,86 @@ const StudyCalendar = {
     }
 };
 
-// Leaderboard System (Local simulation with random names)
+// Leaderboard System (Live data from Firebase)
 const Leaderboard = {
-    FAKE_USERS: [
-        'StudyMaster2k', 'FlashcardPro', 'GCSEQueen', 'BrainPower99',
-        'ExamAce', 'RevisionKing', 'SmartCookie', 'QuizWhiz',
-        'MemoryChamp', 'StudyBuddy', 'LearnFast', 'TopStudent'
-    ],
+    cachedData: null,
+    lastFetch: null,
 
-    getData() {
-        let data = Storage.get('studyflash_leaderboard');
-
-        if (!data || this.shouldRefresh(data.lastUpdate)) {
-            data = this.generateLeaderboard();
+    async getData() {
+        // Check if we have recent cached data (less than 5 minutes old)
+        if (this.cachedData && this.lastFetch) {
+            const minutesSince = (Date.now() - this.lastFetch) / (1000 * 60);
+            if (minutesSince < 5) {
+                return this.cachedData;
+            }
         }
 
-        return data;
+        // Fetch live data from Firebase
+        try {
+            if (typeof Database !== 'undefined' && Auth.isSignedIn()) {
+                const result = await Database.getLeaderboard(20);
+
+                if (result.success && result.leaderboard.length > 0) {
+                    const entries = result.leaderboard.map(user => ({
+                        name: user.displayName,
+                        xp: user.xp,
+                        level: user.level,
+                        rank: user.rank,
+                        isUser: user.isCurrentUser
+                    }));
+
+                    const userEntry = entries.find(e => e.isUser);
+
+                    this.cachedData = {
+                        entries: entries.slice(0, 10),
+                        userRank: userEntry ? userEntry.rank : entries.length + 1,
+                        totalPlayers: entries.length,
+                        lastUpdate: new Date().toISOString(),
+                        isLive: true
+                    };
+                    this.lastFetch = Date.now();
+
+                    return this.cachedData;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching live leaderboard:', error);
+        }
+
+        // Fallback to local data if Firebase fails
+        return this.getLocalData();
     },
 
-    shouldRefresh(lastUpdate) {
-        if (!lastUpdate) return true;
-        const hoursSince = (Date.now() - new Date(lastUpdate)) / (1000 * 60 * 60);
-        return hoursSince >= 24;
-    },
-
-    generateLeaderboard() {
+    getLocalData() {
         const userData = Gamification.getData();
-
-        // Generate fake scores around user's score
-        const baseXP = userData.xp || 100;
-        const entries = this.FAKE_USERS.map(name => ({
-            name,
-            xp: Math.floor(baseXP * (0.5 + Math.random() * 1.5)),
-            isUser: false
-        }));
-
-        // Add user
-        entries.push({
-            name: 'You',
-            xp: userData.xp,
-            isUser: true
-        });
-
-        // Sort by XP
-        entries.sort((a, b) => b.xp - a.xp);
-
-        // Add ranks
-        entries.forEach((entry, i) => entry.rank = i + 1);
-
-        const data = {
-            entries: entries.slice(0, 10),
-            userRank: entries.findIndex(e => e.isUser) + 1,
-            totalPlayers: entries.length,
-            lastUpdate: new Date().toISOString()
+        return {
+            entries: [{
+                name: 'You',
+                xp: userData.xp || 0,
+                level: userData.level || 1,
+                rank: 1,
+                isUser: true
+            }],
+            userRank: 1,
+            totalPlayers: 1,
+            lastUpdate: new Date().toISOString(),
+            isLive: false
         };
-
-        Storage.set('studyflash_leaderboard', data);
-        return data;
     },
 
-    refreshLeaderboard() {
-        Storage.remove('studyflash_leaderboard');
-        return this.getData();
+    async refreshLeaderboard() {
+        this.cachedData = null;
+        this.lastFetch = null;
+        return await this.getData();
     },
 
-    getWeeklyLeaderboard() {
-        const data = this.getData();
-        // Simulate weekly XP as subset of total
+    async getWeeklyLeaderboard() {
+        const data = await this.getData();
         return {
             ...data,
             entries: data.entries.map(e => ({
                 ...e,
-                weeklyXP: Math.floor(e.xp * (0.1 + Math.random() * 0.3))
+                weeklyXP: Math.floor(e.xp * 0.2)
             })).sort((a, b) => b.weeklyXP - a.weeklyXP)
         };
     }

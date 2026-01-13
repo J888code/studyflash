@@ -1032,25 +1032,36 @@ const App = {
     },
 
     // Leaderboard
-    updateLeaderboard() {
-        const data = Leaderboard.getData();
+    async updateLeaderboard() {
         const container = document.getElementById('leaderboard-preview');
-        document.getElementById('user-rank').textContent = `Rank #${data.userRank}`;
+        const rankEl = document.getElementById('user-rank');
 
-        container.innerHTML = data.entries.slice(0, 5).map((entry, i) => {
-            let positionClass = '';
-            if (entry.rank === 1) positionClass = 'gold';
-            else if (entry.rank === 2) positionClass = 'silver';
-            else if (entry.rank === 3) positionClass = 'bronze';
+        // Show loading state
+        if (container) container.innerHTML = '<div class="loading">Loading leaderboard...</div>';
 
-            return `
-                <div class="leaderboard-entry ${entry.isUser ? 'user' : ''}">
-                    <span class="leaderboard-position ${positionClass}">#${entry.rank}</span>
-                    <span class="leaderboard-name">${entry.name}</span>
-                    <span class="leaderboard-xp">${entry.xp} XP</span>
-                </div>
-            `;
-        }).join('');
+        const data = await Leaderboard.getData();
+
+        if (rankEl) rankEl.textContent = `Rank #${data.userRank}`;
+        if (data.isLive && container) {
+            container.setAttribute('data-live', 'true');
+        }
+
+        if (container) {
+            container.innerHTML = data.entries.slice(0, 5).map((entry, i) => {
+                let positionClass = '';
+                if (entry.rank === 1) positionClass = 'gold';
+                else if (entry.rank === 2) positionClass = 'silver';
+                else if (entry.rank === 3) positionClass = 'bronze';
+
+                return `
+                    <div class="leaderboard-entry ${entry.isUser ? 'user' : ''}">
+                        <span class="leaderboard-position ${positionClass}">#${entry.rank}</span>
+                        <span class="leaderboard-name">${entry.name}</span>
+                        <span class="leaderboard-xp">${entry.xp} XP</span>
+                    </div>
+                `;
+            }).join('');
+        }
     },
 
     // Match Pairs Mode
