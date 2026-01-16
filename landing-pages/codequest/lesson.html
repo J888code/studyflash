@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Lesson</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <style>
+        .lesson-page {
+            min-height: 100vh;
+            padding: 80px 3% 120px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .lesson-back {
+            font-family: var(--font-retro);
+            font-size: 20px;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition-fast);
+        }
+
+        .lesson-back:hover {
+            color: var(--neon-pink);
+        }
+
+        .lesson-info {
+            text-align: center;
+            flex: 1;
+        }
+
+        .lesson-level {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--neon-pink);
+            margin-bottom: 5px;
+        }
+
+        .lesson-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(12px, 2vw, 18px);
+            color: white;
+        }
+
+        .lesson-lives {
+            font-size: 24px;
+        }
+
+        /* Main Content Layout */
+        .lesson-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .lesson-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Story Panel */
+        .story-panel {
+            background: var(--bg-card);
+            border: 3px solid var(--neon-pink);
+            padding: 25px;
+            position: relative;
+        }
+
+        .story-panel::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: -5px;
+            bottom: -5px;
+            border: 3px solid var(--neon-cyan);
+            z-index: -1;
+        }
+
+        .story-header {
+            font-family: var(--font-pixel);
+            font-size: 12px;
+            color: var(--neon-yellow);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .story-text {
+            font-family: var(--font-retro);
+            font-size: 20px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .concept-content {
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .concept-content h3 {
+            font-family: var(--font-pixel);
+            font-size: 12px;
+            color: var(--neon-cyan);
+            margin: 20px 0 10px;
+        }
+
+        .concept-content pre {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .concept-content code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--neon-green);
+        }
+
+        /* Challenge Panel */
+        .challenge-panel {
+            background: var(--bg-card);
+            border: 3px solid var(--neon-cyan);
+            padding: 25px;
+            position: relative;
+        }
+
+        .challenge-panel::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: -5px;
+            bottom: -5px;
+            border: 3px solid var(--neon-pink);
+            z-index: -1;
+        }
+
+        .challenge-header {
+            font-family: var(--font-pixel);
+            font-size: 12px;
+            color: var(--neon-green);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .challenge-text {
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--text-primary);
+            background: rgba(57, 255, 20, 0.1);
+            border: 2px solid var(--neon-green);
+            padding: 15px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Code Editor */
+        .editor-container {
+            margin-bottom: 20px;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .editor-label {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--neon-cyan);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-action-btn {
+            font-family: var(--font-retro);
+            font-size: 16px;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .editor-action-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+        }
+
+        #codeEditor {
+            border: 2px solid var(--neon-cyan);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .CodeMirror {
+            height: 280px;
+            font-size: 14px;
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        #run-btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        #hint-btn {
+            background: linear-gradient(180deg, var(--neon-yellow), var(--neon-orange));
+        }
+
+        #hint-btn::before {
+            background: var(--neon-pink);
+        }
+
+        /* Test Results */
+        .results-container {
+            margin-top: 20px;
+        }
+
+        .results-header {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--neon-yellow);
+            margin-bottom: 10px;
+        }
+
+        #test-results {
+            min-height: 50px;
+        }
+
+        /* Preview */
+        .preview-container {
+            margin-top: 20px;
+            border: 2px solid var(--neon-pink);
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: var(--neon-pink);
+            padding: 8px 15px;
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: white;
+        }
+
+        #preview-frame {
+            width: 100%;
+            height: 200px;
+            border: none;
+            background: white;
+        }
+
+        /* Hints Display */
+        #hint-display {
+            margin-top: 15px;
+        }
+
+        /* XP Display */
+        .xp-reward {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255, 205, 0, 0.1);
+            border: 2px solid var(--neon-yellow);
+            margin-top: 20px;
+        }
+
+        .xp-reward-label {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--neon-yellow);
+        }
+
+        .xp-reward-amount {
+            font-family: var(--font-pixel);
+            font-size: 18px;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        @media (max-width: 480px) {
+            .lesson-page {
+                padding: 70px 3% 100px;
+            }
+
+            .lesson-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .lesson-back {
+                order: -1;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+            }
+
+            .CodeMirror {
+                height: 200px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">CODEQUEST</a>
+        <ul class="nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="nav-xp">
+                <span class="nav-level">LVL 1</span>
+                <div class="nav-xp-bar">
+                    <div class="nav-xp-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Lesson Page -->
+    <main class="lesson-page">
+        <div class="lesson-header">
+            <a href="#" class="lesson-back" id="backLink">
+                <span>&larr;</span> Back to Map
+            </a>
+            <div class="lesson-info">
+                <div class="lesson-level" id="lessonLevel">Level 1</div>
+                <div class="lesson-title" id="lessonTitle">Loading...</div>
+            </div>
+            <div class="lesson-lives" id="livesDisplay">❤️❤️❤️</div>
+        </div>
+
+        <div class="lesson-content">
+            <!-- Story & Concept Panel -->
+            <div class="story-panel">
+                <div class="story-header">📜 Mission Briefing</div>
+                <div class="story-text" id="storyText">Loading story...</div>
+                <div class="concept-content" id="conceptContent">Loading concept...</div>
+            </div>
+
+            <!-- Challenge & Editor Panel -->
+            <div class="challenge-panel">
+                <div class="challenge-header">🎯 Your Challenge</div>
+                <div class="challenge-text" id="challengeText">Loading challenge...</div>
+
+                <div class="editor-container">
+                    <div class="editor-header">
+                        <span class="editor-label">CODE EDITOR</span>
+                        <div class="editor-actions">
+                            <button class="editor-action-btn" id="reset-btn">Reset</button>
+                        </div>
+                    </div>
+                    <div id="codeEditor"></div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="btn btn-primary" id="run-btn">▶ Run Code</button>
+                    <button class="btn" id="hint-btn">💡 Hint (<span id="hintCost">25</span> coins)</button>
+                </div>
+
+                <div id="hint-display"></div>
+
+                <div class="results-container">
+                    <div class="results-header">Test Results</div>
+                    <div id="test-results"></div>
+                    <div id="test-summary"></div>
+                </div>
+
+                <div class="preview-container">
+                    <div class="preview-header">PREVIEW</div>
+                    <iframe id="preview-frame" sandbox="allow-scripts"></iframe>
+                </div>
+
+                <div class="xp-reward">
+                    <span class="xp-reward-label">REWARD:</span>
+                    <span class="xp-reward-amount" id="xpReward">+50 XP</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="index.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🏠</span>
+                <span class="bottom-nav-label">Home</span>
+            </a>
+            <a href="paths.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🗺️</span>
+                <span class="bottom-nav-label">Paths</span>
+            </a>
+            <a href="profile.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">👤</span>
+                <span class="bottom-nav-label">Profile</span>
+            </a>
+            <a href="leaderboard.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🏆</span>
+                <span class="bottom-nav-label">Ranks</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+
+    <script src="scripts/game.js"></script>
+    <script src="scripts/lessons.js"></script>
+    <script src="scripts/editor.js"></script>
+    <script>
+        let currentLesson = null;
+        let currentPathId = 'webdev';
+
+        function loadLesson() {
+            const params = new URLSearchParams(window.location.search);
+            currentPathId = params.get('path') || 'webdev';
+            const lessonId = parseInt(params.get('lesson')) || 1;
+
+            const lesson = LessonData.getLesson(currentPathId, lessonId);
+
+            if (!lesson) {
+                window.location.href = `path-webdev.html?path=${currentPathId}`;
+                return;
+            }
+
+            currentLesson = lesson;
+
+            // Update UI
+            document.getElementById('lessonLevel').textContent = `Level ${lesson.id}${lesson.isBoss ? ' - BOSS' : ''}`;
+            document.getElementById('lessonTitle').textContent = lesson.title;
+            document.getElementById('storyText').textContent = lesson.story;
+            document.getElementById('conceptContent').innerHTML = lesson.concept;
+            document.getElementById('challengeText').textContent = lesson.challenge;
+            document.getElementById('xpReward').textContent = `+${lesson.xp} XP`;
+            document.getElementById('backLink').href = `path-webdev.html?path=${currentPathId}`;
+
+            // Update lives
+            const player = CodeQuest.loadPlayer();
+            document.getElementById('livesDisplay').innerHTML =
+                '❤️'.repeat(player.lives) + '🖤'.repeat(3 - player.lives);
+
+            // Initialize editor
+            CodeEditor.init('codeEditor', lesson);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = CodeQuest.init();
+            CodeQuest.updateUI(player);
+            loadLesson();
+        });
+    </script>
+</body>
+</html>

@@ -98,7 +98,7 @@ service cloud.firestore {
 - Copy the Price ID
 
 **Product 3: Lifetime Access**
-- Name: StudyFlash Pro Lifetime
+- Name: c
 - Price: £79.99 (one-time)
 - Copy the Price ID
 

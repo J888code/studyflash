@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Learn to Code Like a Game</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        /* Landing Page Specific Styles */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 5% 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 42, 109, 0.2);
+            border: 2px solid var(--neon-pink);
+            padding: 10px 20px;
+            margin-bottom: 30px;
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--neon-pink);
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .hero h1 {
+            font-family: var(--font-pixel);
+            font-size: clamp(28px, 6vw, 56px);
+            line-height: 1.4;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 .line-cyan {
+            color: var(--neon-cyan);
+            text-shadow: 4px 4px 0 var(--neon-pink);
+        }
+
+        .hero h1 .line-pink {
+            color: var(--neon-pink);
+            text-shadow: 4px 4px 0 var(--neon-cyan);
+        }
+
+        .hero h1 .line-yellow {
+            color: var(--neon-yellow);
+            text-shadow: 4px 4px 0 var(--neon-orange);
+        }
+
+        .hero-text {
+            font-family: var(--font-retro);
+            font-size: 26px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 50px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: var(--font-pixel);
+            font-size: 32px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .stat-label {
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            position: relative;
+            z-index: 10;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .features-header h2 {
+            font-family: var(--font-pixel);
+            font-size: clamp(18px, 3vw, 28px);
+            color: var(--neon-yellow);
+            text-shadow: 3px 3px 0 var(--neon-orange);
+            margin-bottom: 15px;
+        }
+
+        .features-header p {
+            font-family: var(--font-retro);
+            font-size: 22px;
+            color: var(--text-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 3px solid var(--neon-pink);
+            padding: 35px;
+            position: relative;
+            transition: var(--transition-normal);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: -6px;
+            bottom: -6px;
+            border: 3px solid var(--neon-cyan);
+            z-index: -1;
+        }
+
+        .feature-card:hover {
+            transform: translate(3px, 3px);
+        }
+
+        .feature-card:hover::before {
+            transform: translate(-3px, -3px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            font-family: var(--font-retro);
+            font-size: 20px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Paths Preview */
+        .paths-preview {
+            padding: 100px 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .paths-preview h2 {
+            font-family: var(--font-pixel);
+            font-size: clamp(16px, 3vw, 24px);
+            color: var(--neon-cyan);
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 3px 3px 0 var(--neon-pink);
+        }
+
+        .paths-scroll {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .paths-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .path-mini {
+            flex: 0 0 200px;
+            scroll-snap-align: start;
+            background: var(--bg-darker);
+            border: 3px solid;
+            padding: 25px;
+            text-align: center;
+            transition: var(--transition-normal);
+        }
+
+        .path-mini:hover {
+            transform: translateY(-5px);
+        }
+
+        .path-mini-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .path-mini-name {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: white;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 5%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            background: var(--bg-darker);
+        }
+
+        .cta h2 {
+            font-family: var(--font-pixel);
+            font-size: clamp(20px, 4vw, 36px);
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            text-shadow: 4px 4px 0 var(--neon-pink);
+        }
+
+        .cta p {
+            font-family: var(--font-retro);
+            font-size: 28px;
+            color: var(--neon-yellow);
+            margin-bottom: 40px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 5%;
+            text-align: center;
+            background: var(--bg-dark);
+            border-top: 2px solid var(--neon-pink);
+            position: relative;
+            z-index: 10;
+        }
+
+        footer p {
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--neon-cyan);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 100px;
+            }
+
+            .hero-stats {
+                gap: 30px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="sun"></div>
+    <div class="grid-floor"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">CODEQUEST</a>
+        <ul class="nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="nav-xp">
+                <span class="nav-level">LVL 1</span>
+                <div class="nav-xp-bar">
+                    <div class="nav-xp-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-hamburger" onclick="toggleMobileNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <span class="mobile-nav-close" onclick="toggleMobileNav()">&times;</span>
+        <ul class="mobile-nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+    <div class="nav-overlay" id="navOverlay" onclick="toggleMobileNav()"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Free to play - No account required
+            </div>
+            <h1>
+                <span class="line-cyan">Learn to</span><br>
+                <span class="line-pink">Code Like</span><br>
+                <span class="line-yellow">A Game</span>
+            </h1>
+            <p class="hero-text">>> Level up your coding skills through interactive challenges, earn XP, unlock achievements, and compete on the leaderboard. Your journey to becoming a developer starts here.</p>
+            <div class="hero-btns">
+                <a href="paths.html" class="btn btn-primary">Start Playing</a>
+                <a href="#features" class="btn btn-ghost">How It Works</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Career Paths</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Lessons</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Achievements</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-header">
+            <h2>How It Works</h2>
+            <p>>> Learning to code has never been this fun</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <h3>Gamified Learning</h3>
+                <p>Earn XP, level up, and unlock new content as you progress through interactive coding challenges.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3>Real Code Editor</h3>
+                <p>Write actual code in our browser-based editor with syntax highlighting and instant feedback.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3>Achievements</h3>
+                <p>Unlock badges for your accomplishments - perfect runs, streaks, speed challenges, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔥</div>
+                <h3>Daily Streaks</h3>
+                <p>Build a coding habit with daily streaks. Bonus XP for consistent practice.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👾</div>
+                <h3>Boss Battles</h3>
+                <p>Face challenging coding bosses at the end of each chapter to test your skills.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Leaderboard</h3>
+                <p>Compete with coders worldwide. Climb the ranks and prove your skills.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Paths Preview -->
+    <section class="paths-preview">
+        <h2>Choose Your Path</h2>
+        <div class="paths-scroll">
+            <div class="path-mini" style="border-color: #ff2a6d;">
+                <div class="path-mini-icon">🌐</div>
+                <div class="path-mini-name">Web Dev</div>
+            </div>
+            <div class="path-mini" style="border-color: #05d9e8;">
+                <div class="path-mini-icon">🚀</div>
+                <div class="path-mini-name">Full Stack</div>
+            </div>
+            <div class="path-mini" style="border-color: #39ff14;">
+                <div class="path-mini-icon">🎮</div>
+                <div class="path-mini-name">Game Dev</div>
+            </div>
+            <div class="path-mini" style="border-color: #ffcd00;">
+                <div class="path-mini-icon">📊</div>
+                <div class="path-mini-name">Data Science</div>
+            </div>
+            <div class="path-mini" style="border-color: #d264b6;">
+                <div class="path-mini-icon">📱</div>
+                <div class="path-mini-name">Mobile Dev</div>
+            </div>
+            <div class="path-mini" style="border-color: #00d4ff;">
+                <div class="path-mini-icon">☁️</div>
+                <div class="path-mini-name">DevOps</div>
+            </div>
+            <div class="path-mini" style="border-color: #ff6b35;">
+                <div class="path-mini-icon">🤖</div>
+                <div class="path-mini-name">AI/ML</div>
+            </div>
+            <div class="path-mini" style="border-color: #ff2a6d;">
+                <div class="path-mini-icon">🔒</div>
+                <div class="path-mini-name">Security</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Ready Player One?</h2>
+        <p>>> Press start to begin your journey</p>
+        <a href="paths.html" class="btn btn-primary">Start Playing</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>CODEQUEST // LEARN TO CODE LIKE A GAME // 2024</p>
+    </footer>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="index.html" class="bottom-nav-item active">
+                <span class="bottom-nav-icon">🏠</span>
+                <span class="bottom-nav-label">Home</span>
+            </a>
+            <a href="paths.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🗺️</span>
+                <span class="bottom-nav-label">Paths</span>
+            </a>
+            <a href="profile.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">👤</span>
+                <span class="bottom-nav-label">Profile</span>
+            </a>
+            <a href="leaderboard.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🏆</span>
+                <span class="bottom-nav-label">Ranks</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="scripts/game.js"></script>
+    <script>
+        // Mobile Navigation Toggle
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+            document.getElementById('navOverlay').classList.toggle('active');
+        }
+
+        // Initialize player data
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = CodeQuest.init();
+            CodeQuest.updateUI(player);
+        });
+    </script>
+</body>
+</html>

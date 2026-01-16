@@ -67,9 +67,13 @@ const Scanner = {
         this.updateProgress(0, 'Initializing OCR engine...');
 
         try {
-            // Use Tesseract.js for OCR
+            // Preprocess image for better OCR accuracy
+            this.updateProgress(5, 'Preprocessing image...');
+            const processedImage = await this.preprocessImage(this.currentImage);
+
+            // Use Tesseract.js for OCR with optimized settings
             const result = await Tesseract.recognize(
-                this.currentImage,
+                processedImage,
                 'eng',
                 {
                     logger: (m) => {
@@ -79,7 +83,11 @@ const Scanner = {
                         } else if (m.status === 'loading language traineddata') {
                             this.updateProgress(10, 'Loading language data...');
                         }
-                    }
+                    },
+                    // Optimize for printed and handwritten text
+                    tessedit_pageseg_mode: 6, // Assume uniform block of text
+                    tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:!?\'"-()[] ',
+                    preserve_interword_spaces: 1
                 }
             );
 
@@ -483,6 +491,50 @@ const Scanner = {
         if (section === 'upload') {
             document.querySelector('.scanner-upload-section').style.display = 'block';
         }
+    },
+
+    // Preprocess image for better OCR accuracy
+    async preprocessImage(imageSrc) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Set canvas size
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                // Draw original image
+                ctx.drawImage(img, 0, 0);
+
+                // Get image data
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Convert to grayscale and increase contrast
+                for (let i = 0; i < data.length; i += 4) {
+                    // Grayscale
+                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+
+                    // Increase contrast
+                    const contrast = 1.5;
+                    const factor = (259 * (contrast * 100 + 255)) / (255 * (259 - contrast * 100));
+                    const newValue = Math.min(255, Math.max(0, factor * (avg - 128) + 128));
+
+                    // Apply threshold for cleaner text
+                    const threshold = newValue > 140 ? 255 : 0;
+
+                    data[i] = threshold;     // R
+                    data[i + 1] = threshold; // G
+                    data[i + 2] = threshold; // B
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.src = imageSrc;
+        });
     },
 
     // Escape HTML for safe display

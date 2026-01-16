@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BURST - Bold Landing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #ffe600;
+            color: #000;
+            overflow-x: hidden;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 5%;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #000;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-cta {
+            background: #000;
+            color: #ffe600;
+            padding: 12px 28px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: scale(1.05);
+        }
+
+        .hero {
+            padding: 80px 5% 100px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(60px, 12vw, 160px);
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -5px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 span {
+            display: block;
+        }
+
+        .hero h1 .outline {
+            -webkit-text-stroke: 3px #000;
+            color: transparent;
+        }
+
+        .hero-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .hero-text {
+            max-width: 400px;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .btn-large {
+            display: inline-block;
+            background: #000;
+            color: #ffe600;
+            padding: 20px 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-large:hover {
+            background: #ff3366;
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        .stats {
+            display: flex;
+            gap: 60px;
+        }
+
+        .stat h2 {
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat p {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .marquee {
+            background: #000;
+            color: #ffe600;
+            padding: 20px 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee span {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 0 50px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .cards {
+            padding: 100px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: #000;
+            color: #fff;
+            padding: 50px 40px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card:nth-child(2) {
+            background: #ff3366;
+        }
+
+        .card:nth-child(3) {
+            background: #00d4ff;
+            color: #000;
+        }
+
+        .card h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .card p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .card-number {
+            font-size: 80px;
+            font-weight: 700;
+            opacity: 0.2;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background: #000;
+            color: #ffe600;
+            padding: 50px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer .logo {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .stats { flex-direction: column; gap: 30px; }
+            .hero h1 { letter-spacing: -2px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">BURST</div>
+        <ul class="nav-links">
+            <li><a href="#">Work</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+        <button class="nav-cta">Get Started</button>
+    </nav>
+
+    <section class="hero">
+        <h1>
+            <span>Make</span>
+            <span class="outline">Things</span>
+            <span>Happen</span>
+        </h1>
+        <div class="hero-content">
+            <div class="hero-text">
+                <p>We're a creative studio that turns bold ideas into digital experiences that demand attention and drive results.</p>
+                <a href="#" class="btn-large">Start a project</a>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <h2>150+</h2>
+                    <p>Projects delivered</p>
+                </div>
+                <div class="stat">
+                    <h2>98%</h2>
+                    <p>Client satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="marquee">
+        <div class="marquee-content">
+            <span>Branding</span>
+            <span>Web Design</span>
+            <span>Development</span>
+            <span>Strategy</span>
+            <span>Motion</span>
+            <span>Branding</span>
+            <span>Web Design</span>
+            <span>Development</span>
+            <span>Strategy</span>
+            <span>Motion</span>
+        </div>
+    </div>
+
+    <section class="cards">
+        <div class="card">
+            <div class="card-number">01</div>
+            <h3>Strategy</h3>
+            <p>We dig deep to understand your goals and create a roadmap for success that actually works.</p>
+        </div>
+        <div class="card">
+            <div class="card-number">02</div>
+            <h3>Design</h3>
+            <p>Bold visuals that capture attention and communicate your brand's unique personality.</p>
+        </div>
+        <div class="card">
+            <div class="card-number">03</div>
+            <h3>Development</h3>
+            <p>Clean, fast, and scalable code that brings designs to life with pixel-perfect precision.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo">BURST</div>
+        <span>&copy; 2024 All rights reserved</span>
+    </footer>
+</body>
+</html>

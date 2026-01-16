@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity - Minimalist Landing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 8%;
+            background: #fafafa;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .hero {
+            padding: 120px 8% 160px;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 500;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 30px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #666;
+            max-width: 500px;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #1a1a1a;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1a1a1a;
+        }
+
+        .features {
+            padding: 100px 8%;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 60px;
+            max-width: 1000px;
+        }
+
+        .feature h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .feature p {
+            font-size: 14px;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .feature-number {
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            padding: 60px 8%;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .features-grid { grid-template-columns: 1fr; gap: 40px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">clarity</div>
+        <ul class="nav-links">
+            <li><a href="#">Product</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1>Design with intention, build with purpose.</h1>
+        <p>A thoughtfully crafted platform that helps teams create meaningful digital experiences without the noise.</p>
+        <div class="btn-group">
+            <a href="#" class="btn btn-primary">Start free trial</a>
+            <a href="#" class="btn btn-secondary">Learn more</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-number">01</div>
+                <h3>Focused workflow</h3>
+                <p>Remove distractions and concentrate on what matters most to your creative process.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-number">02</div>
+                <h3>Seamless collaboration</h3>
+                <p>Work together in real-time with your team, no matter where they are located.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-number">03</div>
+                <h3>Refined simplicity</h3>
+                <p>Every element serves a purpose. Nothing more, nothing less than what you need.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>&copy; 2024 Clarity. All rights reserved.</span>
+        <span>Designed with intention</span>
+    </footer>
+</body>
+</html>

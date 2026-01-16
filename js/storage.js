@@ -1,4 +1,10 @@
 // Storage Layer - LocalStorage helpers
+
+// Clear old cached leaderboard data (one-time cleanup)
+if (localStorage.getItem('studyflash_leaderboard')) {
+    localStorage.removeItem('studyflash_leaderboard');
+}
+
 const Storage = {
     KEYS: {
         DECKS: 'studyflash_decks',

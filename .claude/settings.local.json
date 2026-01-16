@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(start \"\" \"C:\\\\Users\\\\jasmi\\\\OneDrive\\\\Documents\\\\ClaudeCode\\\\MyProject\\\\index.html\")"
+      "Bash(start \"\" \"C:\\\\Users\\\\jasmi\\\\OneDrive\\\\Documents\\\\ClaudeCode\\\\MyProject\\\\index.html\")",
+      "Bash(start \"\" \"C:\\\\Users\\\\jasmi\\\\OneDrive\\\\Documents\\\\ClaudeCode\\\\MyProject\\\\landing-pages\\\\codequest\\\\index.html\")"
     ]
   }
 }

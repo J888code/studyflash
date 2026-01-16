@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Leaderboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .leaderboard-page {
+            min-height: 100vh;
+            padding: 100px 5% 120px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .leaderboard-header h1 {
+            font-family: var(--font-pixel);
+            font-size: clamp(20px, 4vw, 36px);
+            color: var(--neon-yellow);
+            text-shadow: 4px 4px 0 var(--neon-orange);
+            margin-bottom: 10px;
+        }
+
+        .leaderboard-header p {
+            font-family: var(--font-retro);
+            font-size: 22px;
+            color: var(--text-secondary);
+        }
+
+        /* Your Rank Card */
+        .your-rank {
+            max-width: 600px;
+            margin: 0 auto 50px;
+            background: linear-gradient(135deg, rgba(255, 42, 109, 0.2), rgba(5, 217, 232, 0.2));
+            border: 4px solid var(--neon-pink);
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .your-rank::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: -6px;
+            bottom: -6px;
+            border: 4px solid var(--neon-cyan);
+            z-index: -1;
+        }
+
+        .your-rank-label {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            color: var(--neon-yellow);
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--bg-dark);
+            padding: 0 10px;
+        }
+
+        .your-rank-position {
+            font-family: var(--font-pixel);
+            font-size: 32px;
+            color: var(--neon-cyan);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .your-rank-info {
+            flex: 1;
+        }
+
+        .your-rank-name {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .your-rank-stats {
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .your-rank-xp {
+            font-family: var(--font-pixel);
+            font-size: 16px;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: var(--bg-card);
+            border: 2px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .leaderboard-row:hover {
+            border-color: var(--neon-cyan);
+            transform: translateX(5px);
+        }
+
+        .leaderboard-row.top-1 {
+            background: linear-gradient(135deg, rgba(255, 205, 0, 0.2), rgba(255, 107, 53, 0.2));
+            border: 3px solid var(--neon-yellow);
+        }
+
+        .leaderboard-row.top-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(150, 150, 150, 0.1));
+            border: 2px solid #c0c0c0;
+        }
+
+        .leaderboard-row.top-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(180, 100, 50, 0.1));
+            border: 2px solid #cd7f32;
+        }
+
+        .rank-cell {
+            width: 60px;
+            font-family: var(--font-pixel);
+            font-size: 18px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .top-1 .rank-cell {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        .rank-medal {
+            font-size: 24px;
+        }
+
+        .avatar-cell {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .name-cell {
+            flex: 1;
+        }
+
+        .player-name {
+            font-family: var(--font-pixel);
+            font-size: 12px;
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .player-level {
+            font-family: var(--font-retro);
+            font-size: 16px;
+            color: var(--neon-cyan);
+        }
+
+        .xp-cell {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--neon-yellow);
+            text-align: right;
+        }
+
+        /* Tabs */
+        .leaderboard-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            font-family: var(--font-pixel);
+            font-size: 10px;
+            padding: 12px 25px;
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+        }
+
+        @media (max-width: 600px) {
+            .your-rank {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .leaderboard-row {
+                padding: 12px 15px;
+            }
+
+            .rank-cell {
+                width: 40px;
+                font-size: 14px;
+            }
+
+            .avatar-cell {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .player-name {
+                font-size: 10px;
+            }
+
+            .xp-cell {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .leaderboard-page {
+                padding-bottom: 100px;
+            }
+
+            .leaderboard-tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                font-size: 8px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="grid-floor"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">CODEQUEST</a>
+        <ul class="nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="nav-xp">
+                <span class="nav-level">LVL 1</span>
+                <div class="nav-xp-bar">
+                    <div class="nav-xp-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-hamburger" onclick="toggleMobileNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <span class="mobile-nav-close" onclick="toggleMobileNav()">&times;</span>
+        <ul class="mobile-nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+    <div class="nav-overlay" id="navOverlay" onclick="toggleMobileNav()"></div>
+
+    <!-- Leaderboard Page -->
+    <main class="leaderboard-page">
+        <div class="leaderboard-header">
+            <h1>🏆 Leaderboard</h1>
+            <p>>> Top coders on the Grid</p>
+        </div>
+
+        <!-- Your Rank -->
+        <div class="your-rank">
+            <span class="your-rank-label">YOUR RANK</span>
+            <div class="your-rank-position" id="yourRank">#--</div>
+            <div class="your-rank-info">
+                <div class="your-rank-name" id="yourName">Player1</div>
+                <div class="your-rank-stats">Level <span id="yourLevel">1</span></div>
+            </div>
+            <div class="your-rank-xp" id="yourXP">0 XP</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="leaderboard-tabs">
+            <button class="tab-btn active" onclick="switchTab('all')">All Time</button>
+            <button class="tab-btn" onclick="switchTab('weekly')">This Week</button>
+            <button class="tab-btn" onclick="switchTab('daily')">Today</button>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="leaderboard-container">
+            <div id="leaderboardTable">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="index.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🏠</span>
+                <span class="bottom-nav-label">Home</span>
+            </a>
+            <a href="paths.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🗺️</span>
+                <span class="bottom-nav-label">Paths</span>
+            </a>
+            <a href="profile.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">👤</span>
+                <span class="bottom-nav-label">Profile</span>
+            </a>
+            <a href="leaderboard.html" class="bottom-nav-item active">
+                <span class="bottom-nav-icon">🏆</span>
+                <span class="bottom-nav-label">Ranks</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="scripts/game.js"></script>
+    <script>
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+            document.getElementById('navOverlay').classList.toggle('active');
+        }
+
+        function getAvatarEmoji(avatar) {
+            const avatars = {
+                default: '👤',
+                cyber: '🤖',
+                hacker: '👩‍💻',
+                retro: '👾',
+                wizard: '🧙',
+                ninja: '🥷',
+                runner: '🏃',
+                hunter: '🎯',
+                dragon: '🐉',
+                legend: '⭐',
+                ace: '🃏'
+            };
+            return avatars[avatar] || '👤';
+        }
+
+        function getMedal(rank) {
+            if (rank === 1) return '🥇';
+            if (rank === 2) return '🥈';
+            if (rank === 3) return '🥉';
+            return rank;
+        }
+
+        function renderLeaderboard() {
+            const player = CodeQuest.loadPlayer();
+            const data = CodeQuest.getLeaderboardWithPlayer(player);
+
+            // Update your rank section
+            document.getElementById('yourRank').textContent = `#${data.playerRank}`;
+            document.getElementById('yourName').textContent = player.username;
+            document.getElementById('yourLevel').textContent = player.level;
+            document.getElementById('yourXP').textContent = `${player.totalXP.toLocaleString()} XP`;
+
+            // Render leaderboard
+            const table = document.getElementById('leaderboardTable');
+            table.innerHTML = data.leaderboard.map((entry, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `top-${rank}` : '';
+
+                return `
+                    <div class="leaderboard-row ${rankClass}">
+                        <div class="rank-cell">
+                            ${rank <= 3 ? `<span class="rank-medal">${getMedal(rank)}</span>` : rank}
+                        </div>
+                        <div class="avatar-cell">${getAvatarEmoji(entry.avatar)}</div>
+                        <div class="name-cell">
+                            <div class="player-name">${entry.username}</div>
+                            <div class="player-level">Level ${entry.level}</div>
+                        </div>
+                        <div class="xp-cell">${entry.totalXP.toLocaleString()} XP</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function switchTab(tab) {
+            // Update active tab
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // In a real app, this would fetch different data
+            // For now, we just re-render the same data
+            renderLeaderboard();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = CodeQuest.init();
+            CodeQuest.updateUI(player);
+            renderLeaderboard();
+        });
+    </script>
+</body>
+</html>

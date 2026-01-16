@@ -144,37 +144,63 @@ const Quiz = {
         };
     },
 
-    // Fuzzy matching for typed answers
+    // Fuzzy matching for typed answers - more lenient
     fuzzyMatch(typed, correct) {
-        // Exact match
-        if (typed === correct) return true;
-
-        // Remove punctuation and extra spaces
-        const clean = str => str.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+        // Clean function - remove punctuation and normalize
+        const clean = str => str.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
         const cleanTyped = clean(typed);
         const cleanCorrect = clean(correct);
 
+        // Exact match
         if (cleanTyped === cleanCorrect) return true;
 
-        // Check if typed answer contains key parts
-        // For formulas, check if main components are present
-        const typedWords = cleanTyped.split(' ');
-        const correctWords = cleanCorrect.split(' ');
+        // Handle multiple valid answers (separated by / or , or "or")
+        const possibleAnswers = correct.split(/[\/,]|\bor\b/i).map(a => clean(a));
+        if (possibleAnswers.some(ans => ans === cleanTyped)) return true;
 
-        // If answer is short (1-2 words), require exact match
-        if (correctWords.length <= 2) {
-            return cleanTyped === cleanCorrect;
+        // Check if typed answer is contained in correct answer or vice versa
+        if (cleanCorrect.includes(cleanTyped) && cleanTyped.length >= 3) return true;
+        if (cleanTyped.includes(cleanCorrect) && cleanCorrect.length >= 3) return true;
+
+        // Check for similar answers (allow small typos using Levenshtein-like check)
+        const similarity = this.getSimilarity(cleanTyped, cleanCorrect);
+        if (similarity >= 0.85) return true;
+
+        // For longer answers, check if key words match
+        const correctWords = cleanCorrect.split(' ').filter(w => w.length > 2);
+        const typedWords = cleanTyped.split(' ').filter(w => w.length > 2);
+
+        if (correctWords.length >= 2) {
+            let matches = 0;
+            correctWords.forEach(word => {
+                if (typedWords.some(tw => tw === word || this.getSimilarity(tw, word) >= 0.8)) {
+                    matches++;
+                }
+            });
+            if (matches / correctWords.length >= 0.6) return true;
         }
 
-        // For longer answers, allow 80% match
-        let matches = 0;
-        correctWords.forEach(word => {
-            if (word.length > 2 && cleanTyped.includes(word)) {
-                matches++;
-            }
-        });
+        return false;
+    },
 
-        return matches / correctWords.length >= 0.8;
+    // Calculate similarity between two strings (0 to 1)
+    getSimilarity(str1, str2) {
+        if (str1 === str2) return 1;
+        if (str1.length === 0 || str2.length === 0) return 0;
+
+        // Simple character-based similarity
+        const longer = str1.length > str2.length ? str1 : str2;
+        const shorter = str1.length > str2.length ? str2 : str1;
+
+        let matches = 0;
+        for (let i = 0; i < shorter.length; i++) {
+            if (longer.includes(shorter[i])) matches++;
+        }
+
+        // Also check for substring match
+        if (longer.includes(shorter)) return 0.9;
+
+        return matches / longer.length;
     },
 
     // Move to next question

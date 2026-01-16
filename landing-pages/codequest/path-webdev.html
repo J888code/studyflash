@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Web Dev Path</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .level-map {
+            min-height: 100vh;
+            padding: 100px 5% 120px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .level-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .level-header-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .level-header h1 {
+            font-family: var(--font-pixel);
+            font-size: clamp(18px, 4vw, 32px);
+            color: var(--neon-pink);
+            text-shadow: 3px 3px 0 var(--neon-cyan);
+            margin-bottom: 10px;
+        }
+
+        .level-header p {
+            font-family: var(--font-retro);
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+
+        .level-progress {
+            max-width: 500px;
+            margin: 30px auto;
+        }
+
+        .level-progress-bar {
+            height: 25px;
+            background: rgba(255,255,255,0.1);
+            border: 3px solid var(--neon-yellow);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .level-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-yellow), var(--neon-green));
+            border-radius: 8px;
+        }
+
+        .level-progress-text {
+            font-family: var(--font-retro);
+            font-size: 18px;
+            color: var(--neon-yellow);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Level Grid */
+        .levels-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .level-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .level-row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            width: 4px;
+            height: 20px;
+            background: var(--neon-pink);
+            opacity: 0.5;
+        }
+
+        .level-node {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 15px;
+            border: 4px solid var(--neon-pink);
+            background: var(--bg-darker);
+            cursor: pointer;
+            transition: var(--transition-normal);
+            position: relative;
+        }
+
+        .level-node::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: -4px;
+            bottom: -4px;
+            border: 4px solid var(--neon-cyan);
+            z-index: -1;
+        }
+
+        .level-node:hover {
+            transform: translate(2px, 2px);
+        }
+
+        .level-node:hover::before {
+            transform: translate(-2px, -2px);
+        }
+
+        .level-node.completed {
+            border-color: var(--neon-green);
+            background: rgba(57, 255, 20, 0.1);
+        }
+
+        .level-node.completed::before {
+            border-color: var(--neon-green);
+        }
+
+        .level-node.locked {
+            border-color: var(--text-muted);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-node.locked::before {
+            border-color: var(--text-muted);
+        }
+
+        .level-node.locked:hover {
+            transform: none;
+        }
+
+        .level-node.boss {
+            width: 120px;
+            height: 120px;
+            border-color: var(--neon-yellow);
+            border-width: 5px;
+        }
+
+        .level-node.boss::before {
+            border-color: var(--neon-orange);
+            border-width: 5px;
+        }
+
+        .level-number {
+            font-family: var(--font-pixel);
+            font-size: 20px;
+            color: var(--neon-cyan);
+        }
+
+        .level-node.completed .level-number {
+            color: var(--neon-green);
+        }
+
+        .level-node.boss .level-number {
+            color: var(--neon-yellow);
+        }
+
+        .level-stars {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .level-checkmark {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--neon-green);
+            color: var(--bg-dark);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .level-lock {
+            font-size: 24px;
+        }
+
+        .boss-label {
+            font-family: var(--font-pixel);
+            font-size: 8px;
+            color: var(--neon-yellow);
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* Level Details Modal */
+        .level-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .level-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .level-modal-content {
+            background: var(--bg-darker);
+            border: 4px solid var(--neon-pink);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .level-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: -8px;
+            bottom: -8px;
+            border: 4px solid var(--neon-cyan);
+            z-index: -1;
+        }
+
+        .level-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 30px;
+            color: var(--neon-pink);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .level-modal-close:hover {
+            color: var(--neon-cyan);
+        }
+
+        .level-modal h2 {
+            font-family: var(--font-pixel);
+            font-size: 14px;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+        }
+
+        .level-modal h3 {
+            font-family: var(--font-pixel);
+            font-size: 18px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .level-modal p {
+            font-family: var(--font-retro);
+            font-size: 20px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .level-modal-xp {
+            font-family: var(--font-retro);
+            font-size: 24px;
+            color: var(--neon-yellow);
+            margin-bottom: 25px;
+        }
+
+        .level-modal-btn {
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .level-node {
+                width: 70px;
+                height: 70px;
+                margin: 0 8px;
+            }
+
+            .level-node.boss {
+                width: 90px;
+                height: 90px;
+            }
+
+            .level-number {
+                font-size: 16px;
+            }
+
+            .level-stars {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .level-map {
+                padding-bottom: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="grid-floor"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">CODEQUEST</a>
+        <ul class="nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="nav-xp">
+                <span class="nav-level">LVL 1</span>
+                <div class="nav-xp-bar">
+                    <div class="nav-xp-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-hamburger" onclick="toggleMobileNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <span class="mobile-nav-close" onclick="toggleMobileNav()">&times;</span>
+        <ul class="mobile-nav-links">
+            <li><a href="paths.html">Paths</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+    <div class="nav-overlay" id="navOverlay" onclick="toggleMobileNav()"></div>
+
+    <!-- Level Map -->
+    <main class="level-map">
+        <div class="level-header">
+            <div class="level-header-icon" id="pathIcon">🌐</div>
+            <h1 id="pathName">Web Development</h1>
+            <p id="pathDesc">Master HTML, CSS, and JavaScript</p>
+        </div>
+
+        <div class="level-progress">
+            <div class="level-progress-bar">
+                <div class="level-progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="level-progress-text" id="progressText">0/15 Levels Complete</div>
+        </div>
+
+        <div class="levels-container" id="levelsContainer">
+            <!-- Levels will be dynamically generated -->
+        </div>
+    </main>
+
+    <!-- Level Details Modal -->
+    <div class="level-modal" id="levelModal">
+        <div class="level-modal-content">
+            <span class="level-modal-close" onclick="closeLevelModal()">&times;</span>
+            <h2 id="modalLevel">Level 1</h2>
+            <h3 id="modalTitle">Lesson Title</h3>
+            <p id="modalDesc">Lesson description...</p>
+            <div class="level-modal-xp" id="modalXP">+50 XP</div>
+            <a href="#" class="btn btn-primary level-modal-btn" id="modalBtn">Start Lesson</a>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="index.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🏠</span>
+                <span class="bottom-nav-label">Home</span>
+            </a>
+            <a href="paths.html" class="bottom-nav-item active">
+                <span class="bottom-nav-icon">🗺️</span>
+                <span class="bottom-nav-label">Paths</span>
+            </a>
+            <a href="profile.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">👤</span>
+                <span class="bottom-nav-label">Profile</span>
+            </a>
+            <a href="leaderboard.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🏆</span>
+                <span class="bottom-nav-label">Ranks</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="scripts/game.js"></script>
+    <script src="scripts/lessons.js"></script>
+    <script>
+        let currentPathId = 'webdev';
+
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+            document.getElementById('navOverlay').classList.toggle('active');
+        }
+
+        function renderLevelMap() {
+            const player = CodeQuest.loadPlayer();
+            const pathId = new URLSearchParams(window.location.search).get('path') || 'webdev';
+            currentPathId = pathId;
+
+            const path = LessonData.getPath(pathId);
+            const lessons = LessonData.getLessonsForPath(pathId);
+
+            if (!path) {
+                window.location.href = 'paths.html';
+                return;
+            }
+
+            // Update header
+            document.getElementById('pathIcon').textContent = path.icon;
+            document.getElementById('pathName').textContent = path.fullName;
+            document.getElementById('pathDesc').textContent = path.description;
+
+            // Update progress
+            const completed = player.completedLessons[pathId]?.length || 0;
+            const total = path.totalLessons;
+            const percentage = Math.floor((completed / total) * 100);
+
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${completed}/${total} Levels Complete`;
+
+            // Render levels
+            const container = document.getElementById('levelsContainer');
+            container.innerHTML = '';
+
+            // Group lessons into rows of 3
+            const rows = [];
+            for (let i = 0; i < lessons.length; i += 3) {
+                rows.push(lessons.slice(i, i + 3));
+            }
+
+            rows.forEach((row, rowIndex) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'level-row';
+
+                // Alternate row direction for snake-like pattern
+                const orderedRow = rowIndex % 2 === 1 ? [...row].reverse() : row;
+
+                orderedRow.forEach((lesson, index) => {
+                    const isCompleted = CodeQuest.isLessonCompleted(player, pathId, lesson.id);
+                    const prevLesson = lessons[lesson.id - 2];
+                    const isUnlocked = lesson.id === 1 ||
+                        (prevLesson && CodeQuest.isLessonCompleted(player, pathId, prevLesson.id));
+
+                    const node = document.createElement('div');
+                    node.className = `level-node ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''} ${lesson.isBoss ? 'boss' : ''}`;
+                    node.onclick = () => {
+                        if (isUnlocked) openLevelModal(lesson, pathId);
+                    };
+
+                    node.innerHTML = `
+                        ${isCompleted ? '<span class="level-checkmark">✓</span>' : ''}
+                        ${!isUnlocked ? '<span class="level-lock">🔒</span>' : `
+                            <span class="level-number">${lesson.id}</span>
+                            ${lesson.isBoss ? '<span class="boss-label">BOSS</span>' : ''}
+                            ${isCompleted ? '<span class="level-stars">⭐⭐⭐</span>' : ''}
+                        `}
+                    `;
+
+                    rowDiv.appendChild(node);
+                });
+
+                container.appendChild(rowDiv);
+            });
+        }
+
+        function openLevelModal(lesson, pathId) {
+            const modal = document.getElementById('levelModal');
+            const player = CodeQuest.loadPlayer();
+            const isCompleted = CodeQuest.isLessonCompleted(player, pathId, lesson.id);
+
+            document.getElementById('modalLevel').textContent = `Level ${lesson.id}${lesson.isBoss ? ' - BOSS' : ''}`;
+            document.getElementById('modalTitle').textContent = lesson.title;
+            document.getElementById('modalDesc').textContent = lesson.story;
+            document.getElementById('modalXP').textContent = `+${lesson.xp} XP`;
+
+            const btn = document.getElementById('modalBtn');
+            btn.textContent = isCompleted ? 'Replay Lesson' : 'Start Lesson';
+            btn.href = `lesson.html?path=${pathId}&lesson=${lesson.id}`;
+
+            modal.classList.add('show');
+        }
+
+        function closeLevelModal() {
+            document.getElementById('levelModal').classList.remove('show');
+        }
+
+        // Close modal on outside click
+        document.getElementById('levelModal').addEventListener('click', (e) => {
+            if (e.target.id === 'levelModal') closeLevelModal();
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLevelModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = CodeQuest.init();
+            CodeQuest.updateUI(player);
+            renderLevelMap();
+        });
+    </script>
+</body>
+</html>

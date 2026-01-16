@@ -477,10 +477,17 @@ const App = {
             return;
         }
 
+        // Get due cards first
         this.studySession = SpacedRep.getStudySession(this.currentDeckId);
+
+        // If no cards are due, offer to study all cards anyway
         if (this.studySession.length === 0) {
-            alert('No cards due for review! Check back later.');
-            return;
+            if (confirm('No cards are due for review yet. Would you like to practice all cards anyway?')) {
+                // Shuffle all cards for practice
+                this.studySession = [...deck.cards].sort(() => Math.random() - 0.5).slice(0, 20);
+            } else {
+                return;
+            }
         }
 
         this.studyIndex = 0;
@@ -1253,29 +1260,15 @@ const App = {
     },
 
     async purchasePlan(planId) {
-        const plan = Premium.PLANS[planId];
-        if (!confirm(`Subscribe to ${plan.name} for ${plan.priceDisplay}?`)) return;
-
-        this.showProcessing('Processing payment...');
-        const result = await Premium.purchase('subscription', planId);
-        this.hideProcessing();
-
-        if (result.success) {
-            Gamification.showNotification('Welcome to Pro!', 'Thank you for subscribing!', 'achievement');
-            this.updatePremiumStatus();
-            this.hidePricing();
-            this.updateXPBar();
-            this.updateCoins();
-        }
+        // Purchases disabled until Stripe is fully set up
+        alert('Premium subscriptions coming soon! We are setting up our payment system.');
+        return;
     },
 
     async purchaseCoins(packId) {
-        const pack = Premium.COIN_PACKS.find(p => p.id === packId);
-        if (!confirm(`Buy ${pack.coins} coins for ${pack.priceDisplay}?`)) return;
-
-        this.showProcessing('Processing payment...');
-        const result = await Premium.purchase('coins', packId);
-        this.hideProcessing();
+        // Purchases disabled until Stripe is fully set up
+        alert('Coin purchases coming soon! We are setting up our payment system.');
+        return;
 
         if (result.success) {
             Gamification.showNotification('Coins Added!', `+${pack.coins} coins`, 'xp');

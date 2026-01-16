@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Dark Tech Landing</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: #0a0a0b;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-2 {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            top: auto;
+            bottom: -300px;
+            left: -200px;
+            right: auto;
+        }
+
+        nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 6%;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            border-radius: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .hero {
+            position: relative;
+            z-index: 10;
+            padding: 120px 6%;
+            max-width: 1200px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            color: #a5b4fc;
+            margin-bottom: 30px;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 600;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.6);
+            max-width: 550px;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 80px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .code-block {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            max-width: 600px;
+            overflow-x: auto;
+        }
+
+        .code-block .comment { color: rgba(255,255,255,0.3); }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .string { color: #10b981; }
+        .code-block .number { color: #f59e0b; }
+
+        .features {
+            position: relative;
+            z-index: 10;
+            padding: 100px 6%;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .features-header {
+            margin-bottom: 60px;
+        }
+
+        .features-header h2 {
+            font-size: 36px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+        }
+
+        .features-header p {
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.2));
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.7;
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px 6%;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-btns { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="glow"></div>
+    <div class="glow glow-2"></div>
+
+    <nav>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            Nexus
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Products</a></li>
+            <li><a href="#">Developers</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Docs</a></li>
+        </ul>
+        <button class="nav-cta">Get API Key</button>
+    </nav>
+
+    <section class="hero">
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Now in public beta
+        </div>
+        <h1>Build smarter with<br><span class="gradient">AI-powered APIs</span></h1>
+        <p>The modern infrastructure for intelligent applications. Deploy production-ready AI features in minutes, not months.</p>
+        <div class="hero-btns">
+            <a href="#" class="btn btn-primary">Start building free</a>
+            <a href="#" class="btn btn-secondary">Read documentation</a>
+        </div>
+        <div class="code-block">
+            <span class="comment">// Initialize Nexus client</span><br>
+            <span class="keyword">const</span> nexus = <span class="keyword">new</span> <span class="function">Nexus</span>(<span class="string">'your-api-key'</span>);<br><br>
+            <span class="comment">// Generate intelligent response</span><br>
+            <span class="keyword">const</span> response = <span class="keyword">await</span> nexus.<span class="function">generate</span>({<br>
+            &nbsp;&nbsp;model: <span class="string">'nexus-3'</span>,<br>
+            &nbsp;&nbsp;temperature: <span class="number">0.7</span><br>
+            });
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="features-header">
+            <h2>Everything you need</h2>
+            <p>Powerful features to accelerate your development workflow</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#9889;</div>
+                <h3>Lightning Fast</h3>
+                <p>Sub-100ms response times with our globally distributed edge network.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128274;</div>
+                <h3>Enterprise Security</h3>
+                <p>SOC 2 compliant with end-to-end encryption and advanced access controls.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128200;</div>
+                <h3>Auto Scaling</h3>
+                <p>Handles millions of requests seamlessly with automatic scaling.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128736;</div>
+                <h3>Developer First</h3>
+                <p>Intuitive SDKs, comprehensive docs, and responsive support.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>&copy; 2024 Nexus Technologies</span>
+        <span>Built for developers</span>
+    </footer>
+</body>
+</html>
