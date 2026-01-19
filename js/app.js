@@ -180,6 +180,7 @@ const App = {
             document.getElementById('card-modal-title').textContent = 'Add New Card';
             document.getElementById('card-front-input').value = '';
             document.getElementById('card-back-input').value = '';
+            document.getElementById('card-hint-input').value = '';
             this.showModal('add-card-modal');
         });
         document.getElementById('study-deck').addEventListener('click', () => this.startStudySession());
@@ -211,6 +212,9 @@ const App = {
         document.querySelectorAll('.rating-btn').forEach(btn => {
             btn.addEventListener('click', () => this.rateCard(parseInt(btn.dataset.rating)));
         });
+
+        // Hint button
+        document.getElementById('show-hint-btn').addEventListener('click', () => this.toggleHint());
 
         // Quiz view
         document.querySelectorAll('.quiz-type').forEach(btn => {
@@ -591,6 +595,7 @@ const App = {
         document.getElementById('card-modal-title').textContent = 'Edit Card';
         document.getElementById('card-front-input').value = card.front;
         document.getElementById('card-back-input').value = card.back;
+        document.getElementById('card-hint-input').value = card.hint || '';
         this.showModal('add-card-modal');
     },
 
@@ -598,6 +603,7 @@ const App = {
     saveCard() {
         const front = document.getElementById('card-front-input').value.trim();
         const back = document.getElementById('card-back-input').value.trim();
+        const hint = document.getElementById('card-hint-input').value.trim();
 
         if (!front || !back) {
             alert('Please fill in both front and back of the card');
@@ -605,9 +611,9 @@ const App = {
         }
 
         if (this.editingCardId) {
-            Flashcard.updateCard(this.currentDeckId, this.editingCardId, { front, back });
+            Flashcard.updateCard(this.currentDeckId, this.editingCardId, { front, back, hint });
         } else {
-            Flashcard.addCard(this.currentDeckId, front, back);
+            Flashcard.addCardWithHint(this.currentDeckId, front, back, hint);
         }
 
         this.hideModal();
@@ -684,6 +690,32 @@ const App = {
         document.getElementById('flashcard').classList.remove('flipped', 'correct-animation', 'wrong-animation');
         document.getElementById('rating-buttons').style.display = 'none';
         document.querySelector('.flip-hint').style.display = 'block';
+
+        // Handle hints
+        const hintContainer = document.getElementById('hint-container');
+        const hintText = document.getElementById('hint-text');
+        if (card.hint) {
+            hintContainer.style.display = 'block';
+            hintText.textContent = card.hint;
+            hintText.style.display = 'none';
+            document.getElementById('show-hint-btn').textContent = '💡 Show Hint';
+        } else {
+            hintContainer.style.display = 'none';
+        }
+    },
+
+    toggleHint() {
+        const hintText = document.getElementById('hint-text');
+        const hintBtn = document.getElementById('show-hint-btn');
+
+        if (hintText.style.display === 'none') {
+            hintText.style.display = 'block';
+            hintBtn.textContent = '💡 Hide Hint';
+            SoundFX.play('click');
+        } else {
+            hintText.style.display = 'none';
+            hintBtn.textContent = '💡 Show Hint';
+        }
     },
 
     flipCard() {

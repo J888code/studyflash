@@ -463,6 +463,10 @@
                             </div>
                         </div>
                     </div>
+                    <div class="hint-container" id="hint-container" style="display: none;">
+                        <button class="hint-btn" id="show-hint-btn">💡 Show Hint</button>
+                        <p class="hint-text" id="hint-text" style="display: none;"></p>
+                    </div>
                     <p class="flip-hint">Click card to flip</p>
                 </div>
                 <div class="rating-buttons" id="rating-buttons" style="display: none;">
@@ -711,6 +715,10 @@
                     <div class="form-group">
                         <label>Back (Answer)</label>
                         <textarea id="card-back-input" placeholder="Enter the answer or definition"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Hint (Optional)</label>
+                        <input type="text" id="card-hint-input" placeholder="Add a hint to help remember">
                     </div>
                 </div>
                 <div class="modal-footer">

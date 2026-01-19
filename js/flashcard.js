@@ -53,6 +53,29 @@ const Flashcard = {
         return card;
     },
 
+    // Add a card with hint
+    addCardWithHint(deckId, front, back, hint) {
+        const deck = Storage.getDeck(deckId);
+        if (!deck) return null;
+
+        const card = {
+            id: Storage.generateId(),
+            front: front,
+            back: back,
+            hint: hint || '',
+            easeFactor: 2.5,
+            interval: 0,
+            repetitions: 0,
+            nextReview: null,
+            lastReview: null,
+            createdAt: new Date().toISOString()
+        };
+
+        deck.cards.push(card);
+        Storage.saveDeck(deck);
+        return card;
+    },
+
     // Update a card
     updateCard(deckId, cardId, updates) {
         const deck = Storage.getDeck(deckId);
