@@ -243,7 +243,11 @@
         <main id="decks" class="view">
             <div class="view-header">
                 <h1>Your Decks</h1>
-                <button class="btn btn-primary" id="create-deck-btn">+ New Deck</button>
+                <div class="deck-actions">
+                    <button class="btn btn-primary" id="create-deck-btn">+ New Deck</button>
+                    <button class="btn btn-secondary" id="import-deck-btn">📥 Import</button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                </div>
             </div>
             <div class="deck-tabs">
                 <button class="tab active" data-tab="my-decks">My Decks</button>
@@ -265,6 +269,7 @@
                 <div class="deck-actions">
                     <button class="btn btn-primary" id="study-deck">📚 Study</button>
                     <button class="btn btn-secondary" id="quiz-deck">🎮 Quiz</button>
+                    <button class="btn btn-secondary" id="export-deck">📤 Export</button>
                 </div>
             </div>
             <div class="card-list-header">

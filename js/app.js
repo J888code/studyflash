@@ -169,6 +169,13 @@ const App = {
         });
         document.getElementById('study-deck').addEventListener('click', () => this.startStudySession());
         document.getElementById('quiz-deck').addEventListener('click', () => this.startQuizFromDeck());
+        document.getElementById('export-deck').addEventListener('click', () => this.exportDeck());
+
+        // Import deck
+        document.getElementById('import-deck-btn').addEventListener('click', () => {
+            document.getElementById('import-file-input').click();
+        });
+        document.getElementById('import-file-input').addEventListener('change', (e) => this.importDeck(e));
 
         // Modal handlers
         document.getElementById('save-deck').addEventListener('click', () => this.saveDeck());
@@ -671,6 +678,70 @@ const App = {
     startQuizFromDeck() {
         this.showView('quiz');
         document.getElementById('quiz-deck-select').value = this.currentDeckId;
+    },
+
+    // Export deck as JSON file
+    exportDeck() {
+        if (!this.currentDeckId) return;
+        const deck = Storage.getDeck(this.currentDeckId);
+        if (!deck) return;
+
+        // Create export object (exclude internal IDs for cleaner export)
+        const exportData = {
+            name: deck.name,
+            subject: deck.subject,
+            cards: deck.cards.map(c => ({ front: c.front, back: c.back })),
+            exportedAt: new Date().toISOString(),
+            source: 'StudyFlash'
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${deck.name.replace(/[^a-z0-9]/gi, '_')}_deck.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        Gamification.showNotification('Deck Exported! 📤', `${deck.name} saved as JSON`, 'success');
+    },
+
+    // Import deck from JSON file
+    importDeck(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+
+                // Validate structure
+                if (!data.name || !data.cards || !Array.isArray(data.cards)) {
+                    throw new Error('Invalid deck format');
+                }
+
+                // Create new deck
+                const deckId = Storage.createDeck(data.name, data.subject || 'imported');
+
+                // Add cards
+                data.cards.forEach(card => {
+                    if (card.front && card.back) {
+                        Storage.addCard(deckId, card.front, card.back);
+                    }
+                });
+
+                // Refresh view
+                this.updateDecksView();
+                Gamification.showNotification('Deck Imported! 📥', `${data.name} with ${data.cards.length} cards`, 'success');
+                Confetti.launch('low');
+
+            } catch (err) {
+                alert('Failed to import deck. Make sure it\'s a valid StudyFlash JSON file.');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = ''; // Reset input
     },
 
     startQuiz() {
