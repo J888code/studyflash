@@ -226,6 +226,77 @@ const App = {
 
         // Keyboard shortcuts
         this.setupKeyboardShortcuts();
+
+        // Global search
+        this.setupSearch();
+    },
+
+    // Search functionality
+    setupSearch() {
+        const input = document.getElementById('global-search');
+        const results = document.getElementById('search-results');
+
+        input.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            if (query.length < 2) {
+                results.classList.remove('active');
+                return;
+            }
+            this.performSearch(query);
+        });
+
+        input.addEventListener('focus', () => {
+            if (input.value.trim().length >= 2) {
+                results.classList.add('active');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-search')) {
+                results.classList.remove('active');
+            }
+        });
+    },
+
+    performSearch(query) {
+        const results = document.getElementById('search-results');
+        const allDecks = [...Storage.getDecks(), ...Storage.getGCSEDecks()];
+        const matches = [];
+
+        allDecks.forEach(deck => {
+            deck.cards.forEach(card => {
+                if (card.front.toLowerCase().includes(query) ||
+                    card.back.toLowerCase().includes(query)) {
+                    matches.push({ card, deck });
+                }
+            });
+        });
+
+        if (matches.length === 0) {
+            results.innerHTML = '<div class="search-no-results">No cards found</div>';
+        } else {
+            results.innerHTML = matches.slice(0, 10).map(({ card, deck }) => `
+                <div class="search-result-item" data-deck-id="${deck.id}">
+                    <div class="card-front">${this.highlight(card.front, query)}</div>
+                    <div class="card-back">${this.highlight(card.back, query)}</div>
+                    <div class="deck-name">📚 ${deck.name}</div>
+                </div>
+            `).join('');
+
+            results.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    this.openDeck(item.dataset.deckId);
+                    results.classList.remove('active');
+                    document.getElementById('global-search').value = '';
+                });
+            });
+        }
+        results.classList.add('active');
+    },
+
+    highlight(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
     },
 
     // Keyboard shortcuts for power users

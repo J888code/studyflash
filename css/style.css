@@ -176,6 +176,94 @@ body::before {
     box-shadow: var(--glow);
 }
 
+/* Search Bar */
+.nav-search {
+    position: relative;
+}
+
+.nav-search input {
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 0.9rem;
+    width: 200px;
+    transition: all 0.3s;
+}
+
+.nav-search input:focus {
+    outline: none;
+    border-color: var(--primary);
+    width: 280px;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: rgba(20, 20, 40, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-result-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: rgba(139, 92, 246, 0.2);
+}
+
+.search-result-item .card-front {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.search-result-item .card-back {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.search-result-item .deck-name {
+    font-size: 0.75rem;
+    color: var(--primary-light);
+    margin-top: 4px;
+}
+
+.search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.search-result-item mark {
+    background: var(--primary);
+    color: white;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+
 /* Views */
 .view {
     display: none;
