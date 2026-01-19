@@ -39,6 +39,9 @@ const App = {
         // Update premium status
         this.updatePremiumStatus();
 
+        // Initialize exam countdown
+        this.initExamCountdown();
+
         // Check for ads (for free users)
         setTimeout(() => this.checkAds(), 30000); // Show ad after 30 seconds
     },
@@ -135,6 +138,10 @@ const App = {
         document.getElementById('pomodoro-pause').addEventListener('click', () => this.pausePomodoro());
         document.getElementById('pomodoro-stop').addEventListener('click', () => this.stopPomodoro());
         document.getElementById('pomodoro-close').addEventListener('click', () => this.hidePomodoro());
+
+        // Exam Countdown
+        document.getElementById('set-exam-date').addEventListener('click', () => this.showModal('exam-date-modal'));
+        document.getElementById('save-exam-date').addEventListener('click', () => this.saveExamDate());
 
         // Match Pairs
         document.getElementById('exit-match').addEventListener('click', () => this.exitMatchPairs());
@@ -813,6 +820,73 @@ const App = {
         };
         reader.readAsText(file);
         event.target.value = ''; // Reset input
+    },
+
+    // Exam Countdown
+    initExamCountdown() {
+        const saved = localStorage.getItem('studyflash_exam');
+        if (saved) {
+            const exam = JSON.parse(saved);
+            this.updateExamCountdown(exam);
+        }
+        // Update every minute
+        setInterval(() => {
+            const saved = localStorage.getItem('studyflash_exam');
+            if (saved) this.updateExamCountdown(JSON.parse(saved));
+        }, 60000);
+    },
+
+    saveExamDate() {
+        const name = document.getElementById('exam-name-input').value.trim();
+        const date = document.getElementById('exam-date-input').value;
+
+        if (!name || !date) {
+            alert('Please enter both exam name and date');
+            return;
+        }
+
+        const exam = { name, date };
+        localStorage.setItem('studyflash_exam', JSON.stringify(exam));
+        this.updateExamCountdown(exam);
+        this.hideModal();
+        Gamification.showNotification('Exam Set! 📅', `Countdown started for ${name}`, 'success');
+    },
+
+    updateExamCountdown(exam) {
+        const now = new Date();
+        const examDate = new Date(exam.date + 'T09:00:00');
+        const diff = examDate - now;
+
+        const countdown = document.getElementById('exam-countdown');
+        const daysEl = document.getElementById('countdown-days');
+        const hoursEl = document.getElementById('countdown-hours');
+        const minsEl = document.getElementById('countdown-mins');
+        const nameEl = document.getElementById('exam-name');
+
+        if (diff <= 0) {
+            daysEl.textContent = '0';
+            hoursEl.textContent = '0';
+            minsEl.textContent = '0';
+            nameEl.textContent = `${exam.name} - Good luck! 🍀`;
+            countdown.classList.add('urgent');
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        daysEl.textContent = days;
+        hoursEl.textContent = hours;
+        minsEl.textContent = mins;
+        nameEl.textContent = exam.name;
+
+        // Add urgent class if less than 7 days
+        if (days < 7) {
+            countdown.classList.add('urgent');
+        } else {
+            countdown.classList.remove('urgent');
+        }
     },
 
     startQuiz() {
