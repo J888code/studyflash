@@ -42,6 +42,14 @@ const App = {
         // Initialize exam countdown
         this.initExamCountdown();
 
+        // Initialize visual effects
+        this.initParticles();
+        this.initThemeToggle();
+        this.initParallax();
+
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
         // Check for ads (for free users)
         setTimeout(() => this.checkAds(), 30000); // Show ad after 30 seconds
     },
@@ -887,6 +895,70 @@ const App = {
         } else {
             countdown.classList.remove('urgent');
         }
+    },
+
+    // Floating Particles
+    initParticles() {
+        const container = document.getElementById('particles');
+        if (!container) return;
+
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            container.appendChild(particle);
+        }
+    },
+
+    // Theme Toggle (Dark/Light)
+    initThemeToggle() {
+        const toggle = document.getElementById('theme-toggle');
+        if (!toggle) return;
+
+        // Check saved theme
+        const savedTheme = localStorage.getItem('studyflash_theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            toggle.querySelector('.theme-icon').textContent = '☀️';
+            toggle.querySelector('.theme-label').textContent = 'Light';
+        }
+
+        toggle.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-theme');
+            toggle.querySelector('.theme-icon').textContent = isLight ? '☀️' : '🌙';
+            toggle.querySelector('.theme-label').textContent = isLight ? 'Light' : 'Dark';
+            localStorage.setItem('studyflash_theme', isLight ? 'light' : 'dark');
+            SoundFX.play('click');
+        });
+    },
+
+    // Parallax Effect
+    initParallax() {
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.deck-card, .stat-card');
+            const mouseX = e.clientX / window.innerWidth - 0.5;
+            const mouseY = e.clientY / window.innerHeight - 0.5;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                const distX = (e.clientX - cardCenterX) / rect.width;
+                const distY = (e.clientY - cardCenterY) / rect.height;
+
+                if (Math.abs(distX) < 1 && Math.abs(distY) < 1) {
+                    card.style.transform = `perspective(1000px) rotateY(${distX * 5}deg) rotateX(${-distY * 5}deg)`;
+                }
+            });
+        });
+
+        document.addEventListener('mouseleave', () => {
+            document.querySelectorAll('.deck-card, .stat-card').forEach(card => {
+                card.style.transform = '';
+            });
+        });
     },
 
     startQuiz() {

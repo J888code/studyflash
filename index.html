@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyFlash - GCSE Revision</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
     <!-- Auth View (Login/Signup) -->
     <div id="auth-view" class="auth-view">
         <div class="auth-container">
@@ -642,6 +651,16 @@
                         <div class="setting-desc">Play sounds for actions and achievements</div>
                     </div>
                     <div class="toggle active" id="sound-toggle"></div>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Theme</div>
+                        <div class="setting-desc">Switch between dark and light mode</div>
+                    </div>
+                    <button class="theme-toggle-btn" id="theme-toggle">
+                        <span class="theme-icon">🌙</span>
+                        <span class="theme-label">Dark</span>
+                    </button>
                 </div>
             </div>
         </main>
