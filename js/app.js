@@ -216,6 +216,66 @@ const App = {
                 SoundFX.play('click');
             }
         });
+
+        // Keyboard shortcuts
+        this.setupKeyboardShortcuts();
+    },
+
+    // Keyboard shortcuts for power users
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger if typing in input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            // Study view shortcuts
+            if (this.currentView === 'study' && document.getElementById('study-view').classList.contains('active')) {
+                switch(e.key) {
+                    case ' ': // Space to flip
+                        e.preventDefault();
+                        this.flipCard();
+                        break;
+                    case '1': // Hard
+                        if (document.getElementById('flashcard').classList.contains('flipped')) {
+                            this.rateCard(1);
+                        }
+                        break;
+                    case '2': // Medium
+                        if (document.getElementById('flashcard').classList.contains('flipped')) {
+                            this.rateCard(3);
+                        }
+                        break;
+                    case '3': // Easy
+                        if (document.getElementById('flashcard').classList.contains('flipped')) {
+                            this.rateCard(5);
+                        }
+                        break;
+                    case 'Escape':
+                        this.exitStudy();
+                        break;
+                }
+            }
+
+            // Quiz view shortcuts
+            if (this.currentView === 'quiz') {
+                const quizGame = document.getElementById('quiz-game');
+                if (quizGame && quizGame.style.display !== 'none') {
+                    if (['1','2','3','4'].includes(e.key)) {
+                        const answers = document.querySelectorAll('.quiz-answer:not(.disabled)');
+                        const idx = parseInt(e.key) - 1;
+                        if (answers[idx]) answers[idx].click();
+                    }
+                    if (e.key === 'Enter') {
+                        const nextBtn = document.getElementById('next-question');
+                        if (nextBtn.style.display !== 'none') nextBtn.click();
+                    }
+                }
+            }
+
+            // Global shortcuts
+            if (e.key === 'Escape') {
+                this.hideModal();
+            }
+        });
     },
 
     // Dashboard updates
