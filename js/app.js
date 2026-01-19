@@ -845,9 +845,13 @@ const App = {
         Gamification.recordQuizResult(results.score, results.total);
         this.updateXPBar();
 
-        // Confetti for perfect score
+        // Confetti for good scores
         if (percent === 100) {
-            this.showConfetti();
+            Confetti.launch('high');
+        } else if (percent >= 80) {
+            Confetti.launch('medium');
+        } else if (percent >= 50) {
+            Confetti.launch('low');
         }
 
         // Show breakdown
@@ -860,21 +864,7 @@ const App = {
         `).join('');
     },
 
-    showConfetti() {
-        const colors = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#a855f7', '#06b6d4'];
-        for (let i = 0; i < 50; i++) {
-            setTimeout(() => {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                document.body.appendChild(confetti);
-
-                setTimeout(() => confetti.remove(), 3000);
-            }, i * 30);
-        }
-    },
+    // Legacy confetti - now using Confetti object from gamification.js
 
     retryQuiz() {
         const deckId = Quiz.currentQuiz.deckId;

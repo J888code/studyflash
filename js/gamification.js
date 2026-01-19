@@ -343,6 +343,7 @@ const Gamification = {
 
     showAchievement(achievement) {
         this.showNotification(`Achievement Unlocked! ${achievement.icon}`, achievement.name, 'achievement');
+        Confetti.launch('high');
     },
 
     showChallengeComplete() {
@@ -1635,3 +1636,66 @@ const CardThemes = {
         Gamification.setCardTheme(themeId);
     }
 };
+
+// Confetti Effect
+const Confetti = {
+    colors: ['#8b5cf6', '#06b6d4', '#f472b6', '#10b981', '#f59e0b', '#ef4444'],
+
+    launch(intensity = 'medium') {
+        const count = intensity === 'high' ? 150 : intensity === 'medium' ? 80 : 40;
+        const container = this.getContainer();
+
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => this.createPiece(container), i * 15);
+        }
+    },
+
+    getContainer() {
+        let container = document.getElementById('confetti-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'confetti-container';
+            container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden;';
+            document.body.appendChild(container);
+        }
+        return container;
+    },
+
+    createPiece(container) {
+        const piece = document.createElement('div');
+        const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+        const size = Math.random() * 10 + 5;
+        const startX = Math.random() * 100;
+        const drift = (Math.random() - 0.5) * 200;
+        const duration = Math.random() * 2 + 2;
+        const rotation = Math.random() * 720 - 360;
+
+        piece.style.cssText = `
+            position:absolute;
+            width:${size}px;
+            height:${size}px;
+            background:${color};
+            left:${startX}%;
+            top:-20px;
+            border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+            animation:confettiFall ${duration}s ease-out forwards;
+            --drift:${drift}px;
+            --rotation:${rotation}deg;
+        `;
+
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), duration * 1000);
+    }
+};
+
+// Add confetti CSS animation
+(function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes confettiFall {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(var(--drift)) rotate(var(--rotation)); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+})();
